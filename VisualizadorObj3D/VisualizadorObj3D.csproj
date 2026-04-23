@@ -48,7 +48,7 @@
   <ItemGroup>
     <Compile Include="Classes\Obj3D.cs" />
     <Compile Include="Classes\PointReal.cs" />
-    <Compile Include="Classes\Poligono.cs" />
+    <Compile Include="Classes\Face.cs" />
     <Compile Include="Classes\Reta.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
