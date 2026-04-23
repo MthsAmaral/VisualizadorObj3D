@@ -19,9 +19,15 @@ namespace VisualizadorObj3D
         {
             openFileDialog.FileName = "";
             openFileDialog.Filter = "Arquivos de Objetos 3D (*.obj)|*.obj";
+
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 Obj3D obj3d = new Obj3D(openFileDialog.FileName);
+
+               
+
+                Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height);
+                pictureBox1.Image = imagem;
             }
         }
     }
