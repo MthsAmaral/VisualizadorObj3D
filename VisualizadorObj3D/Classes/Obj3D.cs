@@ -13,13 +13,14 @@ namespace ProcessamentoImagens.classes
         private List<PointReal> VerticesNormais { get; set; }
         private List<PointReal> VerticesTextura { get; set; } //tratar depois
         private List<Point> VerticesAtuais { get; set; } //tratar depois
-        private List<Face> Faces { get; set; } //tratar depois
+        private List<Face> Faces { get; set; }
         private double[,] MatrizAcumulada { get; set; } //tratar depois
 
         public Obj3D()
         {
             VerticesOriginais = new List<PointReal>();
             VerticesNormais = new List<PointReal>();
+            VerticesTextura = new List<PointReal>();
             VerticesAtuais = new List<Point>();
             Faces = new List<Face>();
             MatrizAcumulada = new double[4, 4];
@@ -41,10 +42,12 @@ namespace ProcessamentoImagens.classes
                 {
                     if (line.StartsWith("v")) // Vértice
                     {
+                        Console.WriteLine(line);
                         string[] valores = line.Split(' ');
                         string x = valores[1].Replace(".", ",");
                         string y = valores[2].Replace(".", ",");
                         string z = valores[3].Replace(".", ",");
+
                         // Vértice
                         if (line.StartsWith("v ")) //vértices
                         {
@@ -108,20 +111,28 @@ namespace ProcessamentoImagens.classes
             }
         }
 
-
-
-
         //desenhar o objeto com base nos vértices e faces recuperados do arquivo .obj
         public Point Projetar(PointReal p, int largura, int altura)
         {
-            int escala = 1; // pode ajustar depois
-
-            int x = (int)(p.X * escala) + largura / 2;
-            int y = (int)(-p.Y * escala) + altura / 2;
+            int x = (int)(p.X) + largura / 2;
+            int y = (int)(-p.Y) + altura / 2;
 
             return new Point(x, y);
         }
-        public Bitmap Desenhar(int largura, int altura)
+
+        private void AtualizarVerticesAtuais()
+        {
+            VerticesAtuais.Clear();
+            foreach (PointReal vertice in VerticesOriginais)
+            {
+                PointReal verticeTransformado = AplicarMatriz(vertice);
+                Point verticeProjetado = Projetar(verticeTransformado, 800, 600); //tela de 800x600 por exemplo
+                VerticesAtuais.Add(verticeProjetado);
+            }
+        }
+
+        // Esse desenhar plota na tela as faces do objeto 3D carregado atualmente
+        public Bitmap Desenhar(int largura, int altura, double escala = 1)
         {
             Bitmap bmp = new Bitmap(largura, altura);
 
@@ -140,11 +151,8 @@ namespace ProcessamentoImagens.classes
                     else
                         proximoIndex = face.IndicesVertices[i + 1] - 1;
 
-                    PointReal v1 = AplicarMatriz(VerticesOriginais[atualIndex]);
-                    PointReal v2 = AplicarMatriz(VerticesOriginais[proximoIndex]);
-
-                    Point p1 = Projetar(v1, largura, altura);
-                    Point p2 = Projetar(v2, largura, altura);
+                    Point p1 = VerticesAtuais[atualIndex];
+                    Point p2 = VerticesAtuais[proximoIndex];
 
                     Bresenham(bmp, p1.X, p1.Y, p2.X, p2.Y, 255, 255, 255);
                 }
