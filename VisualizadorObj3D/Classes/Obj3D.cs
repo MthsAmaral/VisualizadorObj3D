@@ -12,16 +12,19 @@ namespace ProcessamentoImagens.classes
         private List<PointReal> VerticesOriginais { get; set; }
         private List<PointReal> VerticesNormais { get; set; }
         private List<PointReal> VerticesTextura { get; set; } //tratar depois
-        private List<Point> VerticesAtuais { get; set; } //tratar depois
+        private List<PointReal> VerticesAtuais { get; set; } //tratar depois
         private List<Face> Faces { get; set; }
         private double[,] MatrizAcumulada { get; set; } //tratar depois
+
+
+        private Bitmap bitmap;
 
         public Obj3D()
         {
             VerticesOriginais = new List<PointReal>();
             VerticesNormais = new List<PointReal>();
             VerticesTextura = new List<PointReal>();
-            VerticesAtuais = new List<Point>();
+            VerticesAtuais = new List<PointReal>();
             Faces = new List<Face>();
             MatrizAcumulada = new double[4, 4];
 
@@ -40,40 +43,46 @@ namespace ProcessamentoImagens.classes
                 string[] lines = File.ReadAllLines(filePath);
                 foreach (string line in lines)
                 {
-                    if (line.StartsWith("v")) // Vértice
+                    string trimmedLine = line.Trim(); // Remove espaços/caracteres extras
+                    string[] valores = trimmedLine.Split(' ');
+
+                    if (trimmedLine.StartsWith("v ")) // Vértice de posição
                     {
-                        Console.WriteLine(line);
-                        string[] valores = line.Split(' ');
+                        Console.WriteLine(trimmedLine);
                         string x = valores[1].Replace(".", ",");
                         string y = valores[2].Replace(".", ",");
                         string z = valores[3].Replace(".", ",");
 
-                        // Vértice
-                        if (line.StartsWith("v ")) //vértices
-                        {
-                            PointReal vertice = new PointReal(Double.Parse(x), Double.Parse(y), Double.Parse(z));
-                            VerticesOriginais.Add(vertice);
-                        }
-                        else if (line.StartsWith("vn ")) //vértices normais
-                        {
-                            PointReal vertice = new PointReal(Double.Parse(x), Double.Parse(y), Double.Parse(z));
-                            VerticesNormais.Add(vertice);
-                        }
-                        else if (line.StartsWith("vt ")) //vértices de textura
-                        {
-                            PointReal vertice = new PointReal(Double.Parse(x), Double.Parse(y), Double.Parse(z));
-                            VerticesTextura.Add(vertice);
-                        }
+                        PointReal vertice = new PointReal(Double.Parse(x), Double.Parse(y), Double.Parse(z));
+                        VerticesOriginais.Add(vertice);
                     }
-                    else if (line.StartsWith("f ")) // Face
+                    else if (trimmedLine.StartsWith("vn ")) // Vértice normal
                     {
-                        // Processar face
-                        string[] valores = line.Split(' ');
-                        int qtdeVertices = valores.Length - 1; //pois o primeiro é o "f"
+                        Console.WriteLine(trimmedLine);
+                        
+                        string x = valores[1].Replace(".", ",");
+                        string y = valores[2].Replace(".", ",");
+                        string z = valores[3].Replace(".", ",");
+
+                        PointReal vertice = new PointReal(Double.Parse(x), Double.Parse(y), Double.Parse(z));
+                        VerticesNormais.Add(vertice);
+                    }
+                    else if (trimmedLine.StartsWith("vt ")) // Vértice de textura
+                    {
+                        Console.WriteLine(trimmedLine);
+                        string x = valores[1].Replace(".", ",");
+                        string y = valores[2].Replace(".", ",");
+
+                        PointReal vertice = new PointReal(Double.Parse(x), Double.Parse(y), 0);
+                        VerticesTextura.Add(vertice);
+                    }
+                    else if (trimmedLine.StartsWith("f ")) // Face
+                    {
+                        int qtdeVertices = valores.Length - 1;
                         Face face = new Face();
                         for (int i = 1; i <= qtdeVertices; i++)
                         {
-                            string[] indices = valores[i].Split('/'); //v/vt/vn --> 0: vértice, 1:textura, 2:normal
+                            string[] indices = valores[i].Split('/');
                             indices = LimparStringVazia(indices);
                             if (indices.Length == 3)
                             {
@@ -89,9 +98,10 @@ namespace ProcessamentoImagens.classes
                         }
                         Faces.Add(face);
                     }
+                    // Qualquer outra linha (o, g, s, usemtl, mtllib, TITLE, #...) é ignorada automaticamente
                 }
 
-                // exibir os valores recuperados do arquivo
+                // Exibir os valores recuperados do arquivo
                 foreach (PointReal v in VerticesOriginais)
                     Console.WriteLine($"X: {v.X}, Y: {v.Y}, Z: {v.Z}");
                 foreach (PointReal v in VerticesNormais)
@@ -102,7 +112,7 @@ namespace ProcessamentoImagens.classes
                     Console.WriteLine("Face:");
                     for (int i = 0; i < f.IndicesVertices.Count; i++)
                     {
-                        if(f.IndicesVerticesTextura.Count > 0)
+                        if (f.IndicesVerticesTextura.Count > 0)
                             Console.WriteLine($"Vértice: {f.IndicesVertices[i]}, Textura: {f.IndicesVerticesTextura[i]}, Normal: {f.IndicesVerticesNormais[i]}");
                         else
                             Console.WriteLine($"Vértice: {f.IndicesVertices[i]}, Normal: {f.IndicesVerticesNormais[i]}");
@@ -111,22 +121,23 @@ namespace ProcessamentoImagens.classes
             }
         }
 
-        //desenhar o objeto com base nos vértices e faces recuperados do arquivo .obj
-        public Point Projetar(PointReal p, int largura, int altura)
-        {
-            int x = (int)(p.X) + largura / 2;
-            int y = (int)(-p.Y) + altura / 2;
 
-            return new Point(x, y);
+        //desenhar o objeto com base nos vértices e faces recuperados do arquivo .obj
+        public PointReal Projetar(PointReal p, int largura, int altura)
+        {
+            double x = (int)(p.X) + largura / 2;
+            double y = (int)(-p.Y) + altura / 2;
+
+            return new PointReal(x, y, 0);
         }
 
-        private void AtualizarVerticesAtuais()
+        private void AtualizarVerticesAtuais(int largura, int altura)
         {
             VerticesAtuais.Clear();
             foreach (PointReal vertice in VerticesOriginais)
             {
                 PointReal verticeTransformado = AplicarMatriz(vertice);
-                Point verticeProjetado = Projetar(verticeTransformado, 800, 600); //tela de 800x600 por exemplo
+                PointReal verticeProjetado = Projetar(verticeTransformado, largura, altura);
                 VerticesAtuais.Add(verticeProjetado);
             }
         }
@@ -134,31 +145,66 @@ namespace ProcessamentoImagens.classes
         // Esse desenhar plota na tela as faces do objeto 3D carregado atualmente
         public Bitmap Desenhar(int largura, int altura, double escala = 1)
         {
-            Bitmap bmp = new Bitmap(largura, altura);
+            AtualizarVerticesAtuais(largura, altura);//passa tamanho real imagem
 
-            foreach (Face face in Faces)
+            // Recria só se o tamanho mudou
+            if (bitmap == null || bitmap.Width != largura || bitmap.Height != altura)
+                bitmap = new Bitmap(largura, altura, PixelFormat.Format24bppRgb);
+            else
             {
-                //exemplo:
-                //f 1 2 3
-                // .obj começa em 1 mas a lista começa em 0
-                for (int i = 0; i < face.IndicesVertices.Count; i++)
+                // Limpa o bitmap reaproveitado
+                using (Graphics g = Graphics.FromImage(bitmap))
                 {
-                    int atualIndex = face.IndicesVertices[i] - 1;
-
-                    int proximoIndex;
-                    if (i == face.IndicesVertices.Count - 1)
-                        proximoIndex = face.IndicesVertices[0] - 1; // volta pro início
-                    else
-                        proximoIndex = face.IndicesVertices[i + 1] - 1;
-
-                    Point p1 = VerticesAtuais[atualIndex];
-                    Point p2 = VerticesAtuais[proximoIndex];
-
-                    Bresenham(bmp, p1.X, p1.Y, p2.X, p2.Y, 255, 255, 255);
+                    g.Clear(Color.Black);
                 }
+                //ou
+                /*
+                    using var g = Graphics.FromImage(bitmap);
+                    g.Clear(Color.Black);
+                 */
             }
 
-            return bmp;
+            BitmapData img = bitmap.LockBits(
+                new Rectangle(0, 0, largura, altura),
+                ImageLockMode.ReadWrite,
+                PixelFormat.Format24bppRgb);
+
+            unsafe
+            {
+                byte *origem = (byte*)img.Scan0.ToPointer();
+
+
+                foreach (Face face in Faces)
+                {
+                    //exemplo:
+                    //f 1 2 3
+                    // .obj começa em 1 mas a lista começa em 0
+                    for (int i = 0; i < face.IndicesVertices.Count; i++)
+                    {
+                        int atualIndex = face.IndicesVertices[i] - 1;
+
+                        int proximoIndex;
+                        if (i == face.IndicesVertices.Count - 1)
+                            proximoIndex = face.IndicesVertices[0] - 1; // volta pro início
+                        else
+                            proximoIndex = face.IndicesVertices[i + 1] - 1;
+
+                        if(atualIndex >= 0 && atualIndex < VerticesAtuais.Count &&
+                           proximoIndex >= 0 && proximoIndex < VerticesAtuais.Count)
+                        {
+                            PointReal p1 = VerticesAtuais[atualIndex];
+                            PointReal p2 = VerticesAtuais[proximoIndex];
+
+                            // Passa o ponteiro já aberto, sem novo lock
+                            Bresenham(origem, img.Stride, largura, altura,
+                                        p1.X, p1.Y, p2.X, p2.Y, 255, 255, 255);
+                        }
+                        
+                    }
+                }
+            }
+            bitmap.UnlockBits(img);
+            return bitmap;
         }
 
 
@@ -189,7 +235,7 @@ namespace ProcessamentoImagens.classes
         // ==========================================================================================
 
 
-        private void GerarMatrizIdentidade()
+        public void GerarMatrizIdentidade()
         {
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
@@ -264,7 +310,7 @@ namespace ProcessamentoImagens.classes
             double seno = Math.Sin(grau * Math.PI / 180);    //quando passado em radianos, funciona normalmente
             double[,] resultado = new double[4, 4];
             double[,] matrizRotacao = new double[4, 4];
-            if (grau == 'x')
+            if (eixo== 'x')
             {
                 matrizRotacao = new double[4, 4] {
                     { 1, 0, 0, 0 },
@@ -273,7 +319,7 @@ namespace ProcessamentoImagens.classes
                     { 0, 0, 0, 1 }
                 };
             }
-            else if (grau == 'y')
+            else if (eixo == 'y')
             {
                 matrizRotacao = new double[4, 4] {
                     { cosseno, 0, seno, 0 },
@@ -301,10 +347,16 @@ namespace ProcessamentoImagens.classes
 
 
         //algoritmo de Bresenham para desenhar as linhas entre os vértices projetados
-        public static void Bresenham(Bitmap imgBitmap, int x1, int y1, int x2, int y2, int R, int G, int B)
+        unsafe public static void Bresenham(byte* origem, int stride, int width, int height,
+                            double x1double, double y1double, double x2double, double y2double, int R, int G, int B)
         {
-            int width = imgBitmap.Width;
-            int height = imgBitmap.Height;
+
+            // Converte para int só aqui, mantendo precisão até a última hora
+            int x1 = (int)Math.Round(x1double);
+            int y1 = (int)Math.Round(y1double);
+            int x2 = (int)Math.Round(x2double);
+            int y2 = (int)Math.Round(y2double);
+
             int pixelSize = 3;
 
             // Verifica se a reta é muito inclinada
@@ -316,26 +368,18 @@ namespace ProcessamentoImagens.classes
             {
                 int aux;
 
-                aux = x1;
-                x1 = y1;
-                y1 = aux;
+                aux = x1; x1 = y1; y1 = aux;
 
-                aux = x2;
-                x2 = y2;
-                y2 = aux;
+                aux = x2; x2 = y2; y2 = aux;
             }
             //desenho será sempre da esquerda para direita
             if (x1 > x2)
             {
                 int aux;
 
-                aux = x1;
-                x1 = x2;
-                x2 = aux;
+                aux = x1; x1 = x2; x2 = aux;
 
-                aux = y1;
-                y1 = y2;
-                y2 = aux;
+                aux = y1; y1 = y2; y2 = aux;
             }
 
             // Calcula as diferenças entre os pontos
@@ -351,55 +395,44 @@ namespace ProcessamentoImagens.classes
             int erro = dx / 2;
 
             int y = y1;
-
-            BitmapData img = imgBitmap.LockBits(new Rectangle(0, 0, width, height),
-                ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-
-            unsafe
+            
+            // Percorre todos os valores de x
+            for (int x = x1; x <= x2; x++)
             {
-                byte* origem = (byte*)img.Scan0.ToPointer();
+                int px, py;
 
-                // Percorre todos os valores de x
-                for (int x = x1; x <= x2; x++)
+                // Se os eixos foram trocados anteriormente inverte novamente para desenhar o pixel correto
+                if (steep)
                 {
-                    int px, py;
+                    px = y;
+                    py = x;
+                }
+                else
+                {
+                    px = x;
+                    py = y;
+                }
 
-                    // Se os eixos foram trocados anteriormente inverte novamente para desenhar o pixel correto
-                    if (steep)
-                    {
-                        px = y;
-                        py = x;
-                    }
-                    else
-                    {
-                        px = x;
-                        py = y;
-                    }
+                // Se o pixel está dentro da imagem
+                if (px >= 0 && px < width && py >= 0 && py < height)
+                {
+                    byte* pixel = origem + py * stride + px * pixelSize;
 
-                    // Se o pixel está dentro da imagem
-                    if (px >= 0 && px < width && py >= 0 && py < height)
-                    {
-                        byte* pixel = origem + py * img.Stride + px * pixelSize;
+                    // Define o pixel com a cor recebida por parâmetro
+                    pixel[0] = (byte)B;
+                    pixel[1] = (byte)G;
+                    pixel[2] = (byte)R;
+                }
 
-                        // Define o pixel com a cor recebida por parâmetro
-                        pixel[0] = (byte)B;
-                        pixel[1] = (byte)G;
-                        pixel[2] = (byte)R;
-                    }
+                // Atualiza o erro
+                erro -= dy;
 
-                    // Atualiza o erro
-                    erro -= dy;
-
-                    if (erro < 0)
-                    {
-                        y += declive;
-                        erro += dx;
-                    }
+                if (erro < 0)
+                {
+                    y += declive;
+                    erro += dx;
                 }
             }
-
-            // Libera o acesso à memória da imagem
-            imgBitmap.UnlockBits(img);
         }
     }
 }
