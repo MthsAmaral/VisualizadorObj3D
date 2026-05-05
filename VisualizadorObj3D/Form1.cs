@@ -122,6 +122,7 @@ namespace VisualizadorObj3D
                     translacaoY += deltaY;
 
                     ultimaPosicao = e.Location;
+                   
                 }
                 else if(rotacionando)
                 {
@@ -134,6 +135,7 @@ namespace VisualizadorObj3D
                     rotacaoX += deltaY * 0.5;
 
                     ultimaPosicaoRotacao = e.Location;
+                    
                 }
                 Redesenhar();
             }
@@ -157,12 +159,13 @@ namespace VisualizadorObj3D
         {
             obj3d.GerarMatrizIdentidade();
 
+           
             // primeiro translação, depois rotação e por último escala
             obj3d.MultiplicaMatrizTranslacao(translacaoX, -translacaoY, 0);
-
+            
             obj3d.MultiplicaMatrizRotacao((int)rotacaoX, 'x');
             obj3d.MultiplicaMatrizRotacao((int)rotacaoY, 'y');
-
+            
             obj3d.MultiplicaMatrizEscala(escala, escala, escala);
             
 
@@ -170,6 +173,32 @@ namespace VisualizadorObj3D
             pictureBox1.Image = imagem;
         }
 
+        private void btnLimpar_Click(object sender, EventArgs e)
+        {
 
+        }
+
+
+
+        private void btAplicar_Click(object sender, EventArgs e)
+        {
+            if (rbLateral.Checked)
+                aplicarProjecaoOrtograficaLateral();
+            else if (rbFrontal.Checked)
+                aplicarProjecaoOrtograficaFrontal();
+            else if (rbSuperior.Checked)
+                aplicarProjecaoOrtograficaSuperior();
+            else if (rbCabinete.Checked)
+                aplicarProjecaoObliquaCabinete();
+            else if (rbCavaleira.Checked)
+                aplicarProjecaoObliquaCavaleira();
+            else if (rbCabinete.Checked)
+                aplicarProjecaoPerspectiva1Ponto();
+        }
+
+        private void aplicarProjecaoOrtograficaLateral()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
