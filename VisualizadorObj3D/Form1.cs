@@ -182,18 +182,7 @@ namespace VisualizadorObj3D
 
         private void btAplicar_Click(object sender, EventArgs e)
         {
-            if (rbLateral.Checked)
-                aplicarProjecaoOrtograficaLateral();
-            else if (rbFrontal.Checked)
-                aplicarProjecaoOrtograficaFrontal();
-            else if (rbSuperior.Checked)
-                aplicarProjecaoOrtograficaSuperior();
-            else if (rbCabinete.Checked)
-                aplicarProjecaoObliquaCabinete();
-            else if (rbCavaleira.Checked)
-                aplicarProjecaoObliquaCavaleira();
-            else if (rbCabinete.Checked)
-                aplicarProjecaoPerspectiva1Ponto();
+            
         }
 
         private void aplicarProjecaoOrtograficaLateral()

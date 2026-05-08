@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -44,7 +45,10 @@ namespace ProcessamentoImagens.classes
                 foreach (string line in lines)
                 {
                     string trimmedLine = line.Trim(); // Remove espaços/caracteres extras
-                    string[] valores = trimmedLine.Split(' ');
+                    string[] valores = trimmedLine.Split(
+                        new[] { ' ' },
+                        StringSplitOptions.RemoveEmptyEntries
+                    );
 
                     if (trimmedLine.StartsWith("v ")) // Vértice de posição
                     {
@@ -53,7 +57,7 @@ namespace ProcessamentoImagens.classes
                         string y = valores[2].Replace(".", ",");
                         string z = valores[3].Replace(".", ",");
 
-                        PointReal vertice = new PointReal(Double.Parse(x), Double.Parse(y), Double.Parse(z));
+                        PointReal vertice = new PointReal(double.Parse(valores[1], CultureInfo.InvariantCulture), double.Parse(valores[2], CultureInfo.InvariantCulture), double.Parse(valores[3], CultureInfo.InvariantCulture));
                         VerticesOriginais.Add(vertice);
                     }
                     else if (trimmedLine.StartsWith("vn ")) // Vértice normal
@@ -64,7 +68,7 @@ namespace ProcessamentoImagens.classes
                         string y = valores[2].Replace(".", ",");
                         string z = valores[3].Replace(".", ",");
 
-                        PointReal vertice = new PointReal(Double.Parse(x), Double.Parse(y), Double.Parse(z));
+                        PointReal vertice = new PointReal(double.Parse(valores[1], CultureInfo.InvariantCulture), double.Parse(valores[2], CultureInfo.InvariantCulture), double.Parse(valores[3], CultureInfo.InvariantCulture));
                         VerticesNormais.Add(vertice);
                     }
                     else if (trimmedLine.StartsWith("vt ")) // Vértice de textura
@@ -73,7 +77,7 @@ namespace ProcessamentoImagens.classes
                         string x = valores[1].Replace(".", ",");
                         string y = valores[2].Replace(".", ",");
 
-                        PointReal vertice = new PointReal(Double.Parse(x), Double.Parse(y), 0);
+                        PointReal vertice = new PointReal(double.Parse(valores[1], CultureInfo.InvariantCulture), double.Parse(valores[2], CultureInfo.InvariantCulture), 0);
                         VerticesTextura.Add(vertice);
                     }
                     else if (trimmedLine.StartsWith("f ")) // Face
@@ -165,45 +169,55 @@ namespace ProcessamentoImagens.classes
             }
 
             BitmapData img = bitmap.LockBits(
-                new Rectangle(0, 0, largura, altura),
-                ImageLockMode.ReadWrite,
-                PixelFormat.Format24bppRgb);
+    new Rectangle(0, 0, largura, altura),
+    ImageLockMode.ReadWrite,
+    PixelFormat.Format24bppRgb);
 
-            unsafe
+            try
             {
-                byte *origem = (byte*)img.Scan0.ToPointer();
-
-
-                foreach (Face face in Faces)
+                unsafe
                 {
-                    //exemplo:
-                    //f 1 2 3
-                    // .obj começa em 1 mas a lista começa em 0
-                    for (int i = 0; i < face.IndicesVertices.Count; i++)
+                    byte* origem = (byte*)img.Scan0.ToPointer();
+
+                    foreach (Face face in Faces)
                     {
-                        int atualIndex = face.IndicesVertices[i] - 1;
-
-                        int proximoIndex;
-                        if (i == face.IndicesVertices.Count - 1)
-                            proximoIndex = face.IndicesVertices[0] - 1; // volta pro início
-                        else
-                            proximoIndex = face.IndicesVertices[i + 1] - 1;
-
-                        if(atualIndex >= 0 && atualIndex < VerticesAtuais.Count &&
-                           proximoIndex >= 0 && proximoIndex < VerticesAtuais.Count)
+                        for (int i = 0; i < face.IndicesVertices.Count; i++)
                         {
-                            PointReal p1 = VerticesAtuais[atualIndex];
-                            PointReal p2 = VerticesAtuais[proximoIndex];
+                            int atualIndex = face.IndicesVertices[i] - 1;
 
-                            // Passa o ponteiro já aberto, sem novo lock
-                            Bresenham(origem, img.Stride, largura, altura,
-                                        p1.X, p1.Y, p2.X, p2.Y, 255, 255, 255);
+                            int proximoIndex;
+
+                            if (i == face.IndicesVertices.Count - 1)
+                                proximoIndex = face.IndicesVertices[0] - 1;
+                            else
+                                proximoIndex = face.IndicesVertices[i + 1] - 1;
+
+                            if (atualIndex >= 0 && atualIndex < VerticesAtuais.Count &&
+                                proximoIndex >= 0 && proximoIndex < VerticesAtuais.Count)
+                            {
+                                PointReal p1 = VerticesAtuais[atualIndex];
+                                PointReal p2 = VerticesAtuais[proximoIndex];
+
+                                Bresenham(
+                                    origem,
+                                    img.Stride,
+                                    largura,
+                                    altura,
+                                    p1.X,
+                                    p1.Y,
+                                    p2.X,
+                                    p2.Y,
+                                    255, 255, 255
+                                );
+                            }
                         }
-                        
                     }
                 }
             }
-            bitmap.UnlockBits(img);
+            finally
+            {
+                bitmap.UnlockBits(img);
+            }
             return bitmap;
         }
 
