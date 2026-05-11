@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using VisualizadorObj3D.Classes;
 
 namespace VisualizadorObj3D
 {
@@ -9,6 +10,7 @@ namespace VisualizadorObj3D
     {
         private double escala = 1; // 1 por default
         private Obj3D obj3d; // Variável para armazenar o objeto 3D carregado
+        private Projetor projetor;
 
         //translação
         private bool arrastando = false;
@@ -45,6 +47,7 @@ namespace VisualizadorObj3D
                 translacaoX = translacaoY = 0; // reseta translação para o valor padrão
                 rotacaoX = rotacaoY = 0;
 
+                projetor = new Projetor();
                 obj3d = new Obj3D(openFileDialog.FileName);
                 obj3d.MultiplicaMatrizEscala(1,1,1);
 
@@ -183,11 +186,22 @@ namespace VisualizadorObj3D
         private void btAplicar_Click(object sender, EventArgs e)
         {
             
+            if(rbLateral.Checked)
+            {
+                projetor.ProjecaoOrtografica(obj3d.GetVerticesAtuais(), 'l'); 
+            }
+            else
+            if (rbFrontal.Checked)
+            {
+                projetor.ProjecaoOrtografica(obj3d.GetVerticesAtuais(), 'f');
+            }
+            else
+            if (rbSuperior.Checked)
+            {
+                projetor.ProjecaoOrtografica(obj3d.GetVerticesAtuais(), 's');
+            }
         }
 
-        private void aplicarProjecaoOrtograficaLateral()
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

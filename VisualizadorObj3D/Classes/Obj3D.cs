@@ -448,5 +448,14 @@ namespace ProcessamentoImagens.classes
                 }
             }
         }
+        public List<PointReal> GetVerticesAtuais()
+        {
+            return VerticesAtuais;
+        }
+        public List<Face> GetFaces()
+        {
+            return Faces;
+        }
     }
+    
 }
