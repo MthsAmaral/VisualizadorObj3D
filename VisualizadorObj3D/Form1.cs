@@ -175,7 +175,7 @@ namespace VisualizadorObj3D
 
         private void btnLimpar_Click(object sender, EventArgs e)
         {
-
+            
         }
 
 

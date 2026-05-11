@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-
+﻿
 namespace ProcessamentoImagens.classes
 {
     internal class Reta

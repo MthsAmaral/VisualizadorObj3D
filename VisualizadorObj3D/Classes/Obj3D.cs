@@ -169,9 +169,9 @@ namespace ProcessamentoImagens.classes
             }
 
             BitmapData img = bitmap.LockBits(
-    new Rectangle(0, 0, largura, altura),
-    ImageLockMode.ReadWrite,
-    PixelFormat.Format24bppRgb);
+                new Rectangle(0, 0, largura, altura),
+                ImageLockMode.ReadWrite,
+                PixelFormat.Format24bppRgb);
 
             try
             {
