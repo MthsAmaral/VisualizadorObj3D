@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using VisualizadorObj3D.Classes;
 
 namespace ProcessamentoImagens.classes
 {
@@ -14,9 +15,10 @@ namespace ProcessamentoImagens.classes
         private List<PointReal> VerticesNormais { get; set; }
         private List<PointReal> VerticesTextura { get; set; } //tratar depois
         private List<PointReal> VerticesAtuais { get; set; } //tratar depois
+        private List<PointReal> VerticesProjetados { get; set; }
         private List<Face> Faces { get; set; }
         private double[,] MatrizAcumulada { get; set; } //tratar depois
-
+        
 
         private Bitmap bitmap;
 
@@ -26,6 +28,7 @@ namespace ProcessamentoImagens.classes
             VerticesNormais = new List<PointReal>();
             VerticesTextura = new List<PointReal>();
             VerticesAtuais = new List<PointReal>();
+            VerticesProjetados = new List<PointReal>();
             Faces = new List<Face>();
             MatrizAcumulada = new double[4, 4];
 
@@ -125,12 +128,41 @@ namespace ProcessamentoImagens.classes
             }
         }
 
-
-        //desenhar o objeto com base nos vértices e faces recuperados do arquivo .obj
-        public PointReal Projetar(PointReal p, int largura, int altura)
+        private void ProjecaoOrtografica(char c)
         {
-            double x = (int)(p.X) + largura / 2;
-            double y = (int)(-p.Y) + altura / 2;
+            VerticesProjetados.Clear();
+            for (int i = 0; i < VerticesAtuais.Count; i++)
+            {
+                PointReal pontoReal = VerticesAtuais[i];
+                PointReal ponto = new PointReal();
+
+                if (c == 'l') // mantem y e z
+                {
+                    ponto.X = pontoReal.Y;
+                    ponto.Y = pontoReal.Z;
+                }
+                else
+                if (c == 'f') // mantem x e y
+                {
+                    ponto.X = pontoReal.X;
+                    ponto.Y = pontoReal.Y;
+                }
+                else
+                if (c == 's') // mantem x e z
+                {
+                    ponto.X = pontoReal.X;
+                    ponto.Y = pontoReal.Z;
+                }
+
+                VerticesProjetados.Add(ponto);
+            }
+
+        }
+        //desenhar o objeto com base nos vértices e faces recuperados do arquivo .obj
+        public PointReal ConverterParaTela(PointReal p, int largura, int altura)
+        {
+            double x = p.X + largura / 2;
+            double y = -p.Y + altura / 2;
 
             return new PointReal(x, y, 0);
         }
@@ -141,18 +173,21 @@ namespace ProcessamentoImagens.classes
             foreach (PointReal vertice in VerticesOriginais)
             {
                 PointReal verticeTransformado = AplicarMatriz(vertice);
-                PointReal verticeProjetado = Projetar(verticeTransformado, largura, altura);
-                VerticesAtuais.Add(verticeProjetado);
+                //PointReal verticeProjetado = ConverterParaTela(verticeTransformado, largura, altura);
+                VerticesAtuais.Add(verticeTransformado);
             }
         }
 
         // Esse desenhar plota na tela as faces do objeto 3D carregado atualmente
-        public Bitmap Desenhar(int largura, int altura, double escala = 1)
+        public Bitmap Desenhar(int largura, int altura, double escala, bool ehProjecao, char c)
         {
+            
             AtualizarVerticesAtuais(largura, altura);//passa tamanho real imagem
+            if (ehProjecao)
+                ProjecaoOrtografica(c);
 
-            // Recria só se o tamanho mudou
-            if (bitmap == null || bitmap.Width != largura || bitmap.Height != altura)
+                // Recria só se o tamanho mudou
+                if (bitmap == null || bitmap.Width != largura || bitmap.Height != altura)
                 bitmap = new Bitmap(largura, altura, PixelFormat.Format24bppRgb);
             else
             {
@@ -195,9 +230,20 @@ namespace ProcessamentoImagens.classes
                             if (atualIndex >= 0 && atualIndex < VerticesAtuais.Count &&
                                 proximoIndex >= 0 && proximoIndex < VerticesAtuais.Count)
                             {
-                                PointReal p1 = VerticesAtuais[atualIndex];
-                                PointReal p2 = VerticesAtuais[proximoIndex];
-
+                                PointReal p1;
+                                PointReal p2;
+                                if (!ehProjecao)
+                                {
+                                     p1 = VerticesAtuais[atualIndex];
+                                     p2 = VerticesAtuais[proximoIndex];
+                                }
+                                else
+                                {
+                                    p1  = VerticesProjetados[atualIndex];
+                                    p2  = VerticesProjetados[proximoIndex];
+                                }
+                                p1 = ConverterParaTela(p1, largura, altura);
+                                p2 = ConverterParaTela(p2, largura, altura);
                                 Bresenham(
                                     origem,
                                     img.Stride,

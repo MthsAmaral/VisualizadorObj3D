@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using VisualizadorObj3D.Classes;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace VisualizadorObj3D
 {
@@ -24,7 +25,11 @@ namespace VisualizadorObj3D
         private double rotacaoX = 0;
         private double rotacaoY = 0;
 
+        // Flags
+        private bool ehProjecao = false;
 
+        // Lado Projecao Ortografica
+        private char c = ' ';
         public Form1()
         {
             InitializeComponent();
@@ -51,7 +56,7 @@ namespace VisualizadorObj3D
                 obj3d = new Obj3D(openFileDialog.FileName);
                 obj3d.MultiplicaMatrizEscala(1,1,1);
 
-                Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height);
+                Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c);
                 pictureBox1.Image = imagem;
             }
         }
@@ -172,7 +177,7 @@ namespace VisualizadorObj3D
             obj3d.MultiplicaMatrizEscala(escala, escala, escala);
             
 
-            Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height);
+            Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c);
             pictureBox1.Image = imagem;
         }
 
@@ -181,27 +186,26 @@ namespace VisualizadorObj3D
             
         }
 
-
-
-        private void btAplicar_Click(object sender, EventArgs e)
+        private void btAplicar_Click_1(object sender, EventArgs e)
         {
-            
-            if(rbLateral.Checked)
+           
+            if (rbLateral.Checked)
             {
-                projetor.ProjecaoOrtografica(obj3d.GetVerticesAtuais(), 'l'); 
+                c = 'l';
             }
             else
             if (rbFrontal.Checked)
             {
-                projetor.ProjecaoOrtografica(obj3d.GetVerticesAtuais(), 'f');
+                c = 'f';
             }
             else
             if (rbSuperior.Checked)
             {
-                projetor.ProjecaoOrtografica(obj3d.GetVerticesAtuais(), 's');
+                c = 's';
             }
+            ehProjecao = true;
+            Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c);
+            pictureBox1.Image = imagem;
         }
-
-       
     }
 }

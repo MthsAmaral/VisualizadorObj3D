@@ -16,7 +16,7 @@ namespace VisualizadorObj3D.Classes
         {
 
         }
-        private void Projetar2D()
+        public void Projetar2D(List<Face> faces, int largura, int altura, double escala = 1.0)
         {
             Point2DReal ini, fim;
             for(int i=0; i<VerticesAtuais2D.Count-1; i++)
@@ -28,10 +28,11 @@ namespace VisualizadorObj3D.Classes
             ini = VerticesAtuais2D[VerticesAtuais2D.Count - 1];
             fim = VerticesAtuais2D[0];
 
-            ini = VerticesAtuais2D[i];
-            fim = VerticesAtuais2D[i + 1];
+            ini = VerticesAtuais2D[VerticesAtuais2D.Count];
+            fim = VerticesAtuais2D[VerticesAtuais2D.Count + 1];
             //Bresenham(origem, img.Stride, largura, altura, p1.X, p1.Y, p2.X, p2.Y, 255, 255, 255);
         }
+        
         public void ProjecaoOrtografica(List<PointReal> verticesAtuais, char c)
         {
             for (int i = 0; i < verticesAtuais.Count; i++)
