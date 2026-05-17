@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using VisualizadorObj3D;
 using VisualizadorObj3D.Classes;
 
 namespace ProcessamentoImagens.classes
@@ -18,7 +19,7 @@ namespace ProcessamentoImagens.classes
         private List<PointReal> VerticesProjetados { get; set; }
         private List<Face> Faces { get; set; }
         private double[,] MatrizAcumulada { get; set; } //tratar depois
-        
+
 
         private Bitmap bitmap;
 
@@ -128,6 +129,47 @@ namespace ProcessamentoImagens.classes
             }
         }
 
+
+
+        //================== PROJEÇÕES =========================
+        private void ProjetarVertices(char tipoProjecao)
+        {
+            /*
+                'f' = ortográfica frontal
+                'l' = ortográfica lateral
+                's' = ortográfica superior
+
+                'c' = oblíqua cavaleira
+                'b' = oblíqua cabinet
+
+                'p' = perspectiva 1 ponto
+                ' ' = sem projeção
+             */
+            VerticesProjetados.Clear();
+
+            //frontal superior ou lateral
+            if (tipoProjecao == 'f' || tipoProjecao == 's' || tipoProjecao == 'l')
+            {
+                ProjecaoOrtografica(tipoProjecao);
+            }
+            else if (tipoProjecao == 'c' || tipoProjecao == 'b')
+            {
+                ProjecaoObliqua(tipoProjecao);
+            }
+            else if (tipoProjecao == 'p')
+            {
+                ProjecaoPerspectiva1Ponto(200);
+            }
+            else
+            {
+                foreach (PointReal p in VerticesAtuais)
+                {
+                    VerticesProjetados.Add(new PointReal(p.X, p.Y, p.Z));
+                }
+            }
+        }
+
+
         private void ProjecaoOrtografica(char c)
         {
             VerticesProjetados.Clear();
@@ -138,8 +180,8 @@ namespace ProcessamentoImagens.classes
 
                 if (c == 'l') // mantem y e z
                 {
-                    ponto.X = pontoReal.Y;
-                    ponto.Y = pontoReal.Z;
+                    ponto.X = pontoReal.Z;
+                    ponto.Y = pontoReal.Y;
                 }
                 else
                 if (c == 'f') // mantem x e y
@@ -158,6 +200,176 @@ namespace ProcessamentoImagens.classes
             }
 
         }
+
+        //projeção obliqua
+        private void ProjecaoObliqua(char op)
+        {
+            double l, angulo;
+
+            if (op == 'c')//cavaleira
+            {
+                l = 1.0;
+                angulo = 45.0;
+            }
+            else //cabinet
+            {
+                l = 0.5;
+                angulo = 45.0;
+            }
+
+            double anguloRadianos = angulo * Math.PI / 180.0;
+            double cos = Math.Cos(anguloRadianos);
+            double sin = Math.Sin(anguloRadianos);
+
+            foreach (PointReal p in VerticesAtuais)
+            {
+                PointReal projetado = new PointReal();
+
+                projetado.X = p.X + p.Z * l * cos;
+                projetado.Y = p.Y + p.Z * l * sin;
+                projetado.Z = 0;
+
+                VerticesProjetados.Add(projetado);
+            }
+        }
+
+        private void ProjecaoPerspectiva1Ponto(double d)
+        {
+            VerticesProjetados.Clear();
+
+            foreach (PointReal p in VerticesAtuais)
+            {
+                PointReal projetado = new PointReal();
+
+                // empurra o objeto para frente no eixo Z
+                double zCamera = p.Z + 400;
+
+                // evita divisão por zero ou valores muito pequenos
+                if (zCamera < 1)
+                {
+                    zCamera = 1;
+                }
+
+                projetado.X = p.X * d / zCamera;
+                projetado.Y = p.Y * d / zCamera;
+                projetado.Z = 0;
+
+                VerticesProjetados.Add(projetado);
+            }
+        }
+
+
+        private bool FaceEhVisivel(Face face, char tipoProjecao)
+        {
+            if (face.IndicesVertices.Count < 3)
+            {
+                return false;
+            }
+
+            PointReal normal = CalcularNormalFace(face);
+
+            int i = face.IndicesVertices[0] - 1;
+            PointReal pontoFace = VerticesAtuais[i];
+
+            PointReal oa = ObterVetorObservacao(pontoFace, tipoProjecao);
+
+            double produtoEscalar = oa.X * normal.X +
+                                    oa.Y * normal.Y +
+                                    oa.Z * normal.Z;
+
+            // Pelo material:
+            // positivo = traseira (não visível)
+            // negativo = frontal (visível)
+            // zero = lateral (não visível)
+            return produtoEscalar < 0;
+        }
+
+        private PointReal CalcularNormalFace(Face face)
+        {
+            if (face.IndicesVertices.Count < 3)
+            {
+                return new PointReal(0, 0, 0);
+            }
+
+            int i1 = face.IndicesVertices[0] - 1;
+            int i2 = face.IndicesVertices[1] - 1;
+            int i3 = face.IndicesVertices[2] - 1;
+
+            PointReal p1 = VerticesAtuais[i1];
+            PointReal p2 = VerticesAtuais[i2];
+            PointReal p3 = VerticesAtuais[i3];
+
+            PointReal vet1 = new PointReal(
+                p2.X - p1.X,
+                p2.Y - p1.Y,
+                p2.Z - p1.Z
+            );
+
+            PointReal vet2 = new PointReal(
+                p3.X - p1.X,
+                p3.Y - p1.Y,
+                p3.Z - p1.Z
+            );
+
+            PointReal normal = new PointReal(
+                vet1.Y * vet2.Z - vet1.Z * vet2.Y,
+                vet1.Z * vet2.X - vet1.X * vet2.Z,
+                vet1.X * vet2.Y - vet1.Y * vet2.X
+            );
+
+            return normal;
+        }
+
+        private PointReal ObterVetorObservacao(PointReal pontoFace, char tipoProjecao)
+        {
+            switch (tipoProjecao)
+            {
+                case 'f': // ortográfica frontal no plano XY
+                    return new PointReal(0, 0, -1);
+
+                case 'l': // lateral
+                    return new PointReal(-1, 0, 0);
+
+                case 's': // superior
+                    return new PointReal(0, -1, 0);
+
+                case 'c': // cavaleira
+                    {
+                        double l = 1.0;
+                        double alpha = 45.0 * Math.PI / 180.0;
+                        return new PointReal(l * Math.Cos(alpha), l * Math.Sin(alpha), -1);
+                    }
+
+                case 'b': // cabinet
+                    {
+                        double l = 0.5;
+                        double alpha = 45.0 * Math.PI / 180.0;
+                        return new PointReal(l * Math.Cos(alpha), l * Math.Sin(alpha), -1);
+                    }
+
+                case 'p': // perspectiva: observador na origem
+                    {
+                        double distanciaCamera = 400.0;
+
+                        PointReal pontoCamera = new PointReal(
+                            pontoFace.X,
+                            pontoFace.Y,
+                            pontoFace.Z + distanciaCamera
+                        );
+
+                        return new PointReal(pontoCamera.X, pontoCamera.Y, pontoCamera.Z);
+                    }
+
+                default://frontal
+                    return new PointReal(0, 0, -1);
+            }
+        }
+
+        // ================== FIM PROJEÇÕES ==================
+
+
+
+
         //desenhar o objeto com base nos vértices e faces recuperados do arquivo .obj
         public PointReal ConverterParaTela(PointReal p, int largura, int altura)
         {
@@ -179,15 +391,16 @@ namespace ProcessamentoImagens.classes
         }
 
         // Esse desenhar plota na tela as faces do objeto 3D carregado atualmente
-        public Bitmap Desenhar(int largura, int altura, double escala, bool ehProjecao, char c)
+        public Bitmap Desenhar(int largura, int altura, double escala, bool ehProjecao, char tipoProjecao, bool eliminarFacesOcultas)
         {
             
             AtualizarVerticesAtuais(largura, altura);//passa tamanho real imagem
-            if (ehProjecao)
-                ProjecaoOrtografica(c);
 
-                // Recria só se o tamanho mudou
-                if (bitmap == null || bitmap.Width != largura || bitmap.Height != altura)
+            if (ehProjecao)
+                ProjetarVertices(tipoProjecao);
+
+            // Recria só se o tamanho mudou
+            if (bitmap == null || bitmap.Width != largura || bitmap.Height != altura)
                 bitmap = new Bitmap(largura, altura, PixelFormat.Format24bppRgb);
             else
             {
@@ -196,17 +409,10 @@ namespace ProcessamentoImagens.classes
                 {
                     g.Clear(Color.Black);
                 }
-                //ou
-                /*
-                    using var g = Graphics.FromImage(bitmap);
-                    g.Clear(Color.Black);
-                 */
             }
 
-            BitmapData img = bitmap.LockBits(
-                new Rectangle(0, 0, largura, altura),
-                ImageLockMode.ReadWrite,
-                PixelFormat.Format24bppRgb);
+            BitmapData img = bitmap.LockBits(new Rectangle(0, 0, largura, altura),
+                ImageLockMode.ReadWrite,PixelFormat.Format24bppRgb);
 
             try
             {
@@ -216,47 +422,53 @@ namespace ProcessamentoImagens.classes
 
                     foreach (Face face in Faces)
                     {
-                        for (int i = 0; i < face.IndicesVertices.Count; i++)
+                        bool desenharFace = true;
+                        if(eliminarFacesOcultas)
                         {
-                            int atualIndex = face.IndicesVertices[i] - 1;
-
-                            int proximoIndex;
-
-                            if (i == face.IndicesVertices.Count - 1)
-                                proximoIndex = face.IndicesVertices[0] - 1;
-                            else
-                                proximoIndex = face.IndicesVertices[i + 1] - 1;
-
-                            if (atualIndex >= 0 && atualIndex < VerticesAtuais.Count &&
-                                proximoIndex >= 0 && proximoIndex < VerticesAtuais.Count)
+                            desenharFace = FaceEhVisivel(face, tipoProjecao);
+                        }
+                        if(desenharFace)
+                        {
+                            for (int i = 0; i < face.IndicesVertices.Count; i++)
                             {
-                                PointReal p1;
-                                PointReal p2;
-                                if (!ehProjecao)
-                                {
-                                     p1 = VerticesAtuais[atualIndex];
-                                     p2 = VerticesAtuais[proximoIndex];
-                                }
+                                int atualIndex = face.IndicesVertices[i] - 1;
+
+                                int proximoIndex;
+
+                                if (i == face.IndicesVertices.Count - 1)
+                                    proximoIndex = face.IndicesVertices[0] - 1;
                                 else
+                                    proximoIndex = face.IndicesVertices[i + 1] - 1;
+
+                                if (atualIndex >= 0 && atualIndex < VerticesAtuais.Count &&
+                                    proximoIndex >= 0 && proximoIndex < VerticesAtuais.Count)
                                 {
-                                    p1  = VerticesProjetados[atualIndex];
-                                    p2  = VerticesProjetados[proximoIndex];
+                                    PointReal p1;
+                                    PointReal p2;
+                                    if (!ehProjecao)
+                                    {
+                                        p1 = VerticesAtuais[atualIndex];
+                                        p2 = VerticesAtuais[proximoIndex];
+                                    }
+                                    else
+                                    {
+                                        p1 = VerticesProjetados[atualIndex];
+                                        p2 = VerticesProjetados[proximoIndex];
+                                    }
+                                    p1 = ConverterParaTela(p1, largura, altura);
+                                    p2 = ConverterParaTela(p2, largura, altura);
+
+                                    if (Math.Abs(p1.X) < 10000 && Math.Abs(p1.Y) < 10000 &&
+                                            Math.Abs(p2.X) < 10000 && Math.Abs(p2.Y) < 10000)
+                                    {
+                                        Bresenham(origem, img.Stride, largura, altura, p1.X, p1.Y, p2.X, p2.Y,
+                                        255, 255, 255);
+                                    }
+
                                 }
-                                p1 = ConverterParaTela(p1, largura, altura);
-                                p2 = ConverterParaTela(p2, largura, altura);
-                                Bresenham(
-                                    origem,
-                                    img.Stride,
-                                    largura,
-                                    altura,
-                                    p1.X,
-                                    p1.Y,
-                                    p2.X,
-                                    p2.Y,
-                                    255, 255, 255
-                                );
                             }
                         }
+                        
                     }
                 }
             }
@@ -269,6 +481,12 @@ namespace ProcessamentoImagens.classes
 
 
 
+
+
+
+
+
+
         //aplica matriz acumulada para transformar os vértices originais do objeto, retornando os vértices transformados
         public PointReal AplicarMatriz(PointReal p)
         {
@@ -278,9 +496,6 @@ namespace ProcessamentoImagens.classes
 
             return new PointReal(x, y, z);
         }
-
-
-
 
 
         public string[] LimparStringVazia(string[] array)

@@ -31,10 +31,11 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnAbrirArquivo = new System.Windows.Forms.Button();
             this.panelCabecalho = new System.Windows.Forms.Panel();
-            this.btnLimpar = new System.Windows.Forms.Button();
+            this.btnRedefinirObjOriginal = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnLimparProjecoes = new System.Windows.Forms.Button();
             this.checkBoxEliminarFacesOcultas = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rb1Ponto = new System.Windows.Forms.RadioButton();
@@ -45,15 +46,9 @@
             this.rbSuperior = new System.Windows.Forms.RadioButton();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.btAplicar = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
             this.textBox3 = new System.Windows.Forms.TextBox();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button9 = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panelCabecalho.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -93,27 +88,27 @@
             this.panelCabecalho.BackColor = System.Drawing.SystemColors.ControlLight;
             this.panelCabecalho.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.panelCabecalho.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelCabecalho.Controls.Add(this.btnLimpar);
+            this.panelCabecalho.Controls.Add(this.btnRedefinirObjOriginal);
             this.panelCabecalho.Controls.Add(this.btnAbrirArquivo);
             this.panelCabecalho.Location = new System.Drawing.Point(12, 4);
             this.panelCabecalho.Name = "panelCabecalho";
             this.panelCabecalho.Size = new System.Drawing.Size(1129, 56);
             this.panelCabecalho.TabIndex = 2;
             // 
-            // btnLimpar
+            // btnRedefinirObjOriginal
             // 
-            this.btnLimpar.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.btnLimpar.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.btnLimpar.FlatAppearance.BorderSize = 0;
-            this.btnLimpar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLimpar.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLimpar.Location = new System.Drawing.Point(100, 8);
-            this.btnLimpar.Name = "btnLimpar";
-            this.btnLimpar.Size = new System.Drawing.Size(68, 37);
-            this.btnLimpar.TabIndex = 2;
-            this.btnLimpar.Text = "Limpar";
-            this.btnLimpar.UseVisualStyleBackColor = false;
-            this.btnLimpar.Click += new System.EventHandler(this.btnLimpar_Click);
+            this.btnRedefinirObjOriginal.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.btnRedefinirObjOriginal.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnRedefinirObjOriginal.FlatAppearance.BorderSize = 0;
+            this.btnRedefinirObjOriginal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRedefinirObjOriginal.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRedefinirObjOriginal.Location = new System.Drawing.Point(100, 8);
+            this.btnRedefinirObjOriginal.Name = "btnRedefinirObjOriginal";
+            this.btnRedefinirObjOriginal.Size = new System.Drawing.Size(113, 37);
+            this.btnRedefinirObjOriginal.TabIndex = 2;
+            this.btnRedefinirObjOriginal.Text = "Redefinir Objeto Original";
+            this.btnRedefinirObjOriginal.UseVisualStyleBackColor = false;
+            this.btnRedefinirObjOriginal.Click += new System.EventHandler(this.btnRedefinirObjOriginal_Click);
             // 
             // panel1
             // 
@@ -142,22 +137,32 @@
             // 
             this.panel2.BackColor = System.Drawing.SystemColors.ControlLight;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel2.Controls.Add(this.button1);
+            this.panel2.Controls.Add(this.btnLimparProjecoes);
             this.panel2.Controls.Add(this.checkBoxEliminarFacesOcultas);
             this.panel2.Controls.Add(this.groupBox1);
             this.panel2.Controls.Add(this.textBox4);
             this.panel2.Controls.Add(this.btAplicar);
-            this.panel2.Controls.Add(this.button6);
             this.panel2.Controls.Add(this.textBox3);
-            this.panel2.Controls.Add(this.button7);
-            this.panel2.Controls.Add(this.button8);
             this.panel2.Controls.Add(this.textBox2);
-            this.panel2.Controls.Add(this.button9);
-            this.panel2.Controls.Add(this.button10);
             this.panel2.Location = new System.Drawing.Point(17, 42);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(367, 210);
             this.panel2.TabIndex = 5;
+            // 
+            // btnLimparProjecoes
+            // 
+            this.btnLimparProjecoes.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.btnLimparProjecoes.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnLimparProjecoes.FlatAppearance.BorderSize = 0;
+            this.btnLimparProjecoes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLimparProjecoes.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnLimparProjecoes.Location = new System.Drawing.Point(288, 169);
+            this.btnLimparProjecoes.Name = "btnLimparProjecoes";
+            this.btnLimparProjecoes.Size = new System.Drawing.Size(68, 23);
+            this.btnLimparProjecoes.TabIndex = 13;
+            this.btnLimparProjecoes.Text = "Limpar";
+            this.btnLimparProjecoes.UseVisualStyleBackColor = false;
+            this.btnLimparProjecoes.Click += new System.EventHandler(this.btnLimparProjecoes_Click);
             // 
             // checkBoxEliminarFacesOcultas
             // 
@@ -276,16 +281,7 @@
             this.btAplicar.TabIndex = 3;
             this.btAplicar.Text = "Aplicar";
             this.btAplicar.UseVisualStyleBackColor = false;
-            this.btAplicar.Click += new System.EventHandler(this.btAplicar_Click_1);
-            // 
-            // button6
-            // 
-            this.button6.Location = new System.Drawing.Point(119, 339);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(75, 23);
-            this.button6.TabIndex = 4;
-            this.button6.Text = "button6";
-            this.button6.UseVisualStyleBackColor = true;
+            this.btAplicar.Click += new System.EventHandler(this.btAplicar_Click);
             // 
             // textBox3
             // 
@@ -299,24 +295,6 @@
             this.textBox3.Text = "Oblíqua";
             this.textBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // button7
-            // 
-            this.button7.Location = new System.Drawing.Point(177, 298);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(75, 23);
-            this.button7.TabIndex = 3;
-            this.button7.Text = "button7";
-            this.button7.UseVisualStyleBackColor = true;
-            // 
-            // button8
-            // 
-            this.button8.Location = new System.Drawing.Point(39, 268);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(75, 23);
-            this.button8.TabIndex = 2;
-            this.button8.Text = "button8";
-            this.button8.UseVisualStyleBackColor = true;
-            // 
             // textBox2
             // 
             this.textBox2.BackColor = System.Drawing.Color.CornflowerBlue;
@@ -328,38 +306,6 @@
             this.textBox2.TabIndex = 9;
             this.textBox2.Text = "Ortográfica";
             this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // button9
-            // 
-            this.button9.Location = new System.Drawing.Point(210, 210);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(75, 23);
-            this.button9.TabIndex = 1;
-            this.button9.Text = "button9";
-            this.button9.UseVisualStyleBackColor = true;
-            // 
-            // button10
-            // 
-            this.button10.Location = new System.Drawing.Point(68, 224);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(75, 23);
-            this.button10.TabIndex = 0;
-            this.button10.Text = "button10";
-            this.button10.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.button1.FlatAppearance.BorderSize = 0;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(288, 169);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(68, 23);
-            this.button1.TabIndex = 13;
-            this.button1.Text = "Aplicar";
-            this.button1.UseVisualStyleBackColor = false;
             // 
             // Form1
             // 
@@ -392,16 +338,11 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button9;
-        private System.Windows.Forms.Button button10;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Button btnLimpar;
+        private System.Windows.Forms.Button btnRedefinirObjOriginal;
         private System.Windows.Forms.Button btAplicar;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton rb1Ponto;
@@ -411,7 +352,7 @@
         private System.Windows.Forms.RadioButton rbFrontal;
         private System.Windows.Forms.RadioButton rbSuperior;
         private System.Windows.Forms.CheckBox checkBoxEliminarFacesOcultas;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnLimparProjecoes;
     }
 }
 

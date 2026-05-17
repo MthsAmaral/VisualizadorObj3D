@@ -13,20 +13,21 @@ namespace VisualizadorObj3D
         private Obj3D obj3d; // Variável para armazenar o objeto 3D carregado
         private Projetor projetor;
 
+        private Point ultimaPosicaoObj;
+
         //translação
         private bool arrastando = false;
-        private Point ultimaPosicao;
         private double translacaoX = 0;
         private double translacaoY = 0;
 
         //rotação
         private bool rotacionando = false;
-        private Point ultimaPosicaoRotacao;
         private double rotacaoX = 0;
         private double rotacaoY = 0;
 
         // Flags
         private bool ehProjecao = false;
+        private bool eliminarFacesOcultas = false;
 
         // Lado Projecao Ortografica
         private char c = ' ';
@@ -56,12 +57,48 @@ namespace VisualizadorObj3D
                 obj3d = new Obj3D(openFileDialog.FileName);
                 obj3d.MultiplicaMatrizEscala(1,1,1);
 
-                Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c);
+                Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c, eliminarFacesOcultas);
                 pictureBox1.Image = imagem;
             }
         }
 
+        private void btnRedefinirObjOriginal_Click(object sender, EventArgs e)
+        {
+            if(obj3d != null)
+            {
+                // volta valores padrão
+                escala = 1;
+                translacaoX = 0;
+                translacaoY = 0;
+                rotacaoX = 0;
+                rotacaoY = 0;
 
+                // desativa projeção
+                ehProjecao = false;
+                c = ' ';
+
+                // desmarca os radio buttons de projeção
+                rbFrontal.Checked = false;
+                rbLateral.Checked = false;
+                rbSuperior.Checked = false;
+                rbCavaleira.Checked = false;
+                rbCabinete.Checked = false;
+                rb1Ponto.Checked = false;
+
+                // zera estados do mouse
+                arrastando = false;
+                rotacionando = false;
+
+                // restaura a matriz acumulada para identidade
+                obj3d.GerarMatrizIdentidade();
+
+                eliminarFacesOcultas = false;
+
+                // redesenha o objeto original
+                Bitmap imagem = obj3d.Desenhar(pictureBox1.Width,pictureBox1.Height,1.0,ehProjecao,c, eliminarFacesOcultas);
+                pictureBox1.Image = imagem;
+            }
+        }
 
 
 
@@ -105,12 +142,12 @@ namespace VisualizadorObj3D
             if (e.Button == MouseButtons.Left)
             {
                 arrastando = true;
-                ultimaPosicao = e.Location;
+                ultimaPosicaoObj = e.Location;
             }
             else if (e.Button == MouseButtons.Right)
             {
                 rotacionando = true;
-                ultimaPosicaoRotacao = e.Location;
+                ultimaPosicaoObj = e.Location;
             }
         }
 
@@ -122,27 +159,27 @@ namespace VisualizadorObj3D
                 if (arrastando)
                 {
                     // Calcula a diferença de posição do mouse
-                    int deltaX = e.X - ultimaPosicao.X; // quanto andou horizontalmente
-                    int deltaY = e.Y - ultimaPosicao.Y; // quanto andou verticalmente
+                    int deltaX = e.X - ultimaPosicaoObj.X; // quanto andou horizontalmente
+                    int deltaY = e.Y - ultimaPosicaoObj.Y; // quanto andou verticalmente
 
 
                     translacaoX += deltaX;
                     translacaoY += deltaY;
 
-                    ultimaPosicao = e.Location;
+                    ultimaPosicaoObj = e.Location;
                    
                 }
                 else if(rotacionando)
                 {
-                    double deltaX = e.X - ultimaPosicaoRotacao.X;
-                    double deltaY = e.Y - ultimaPosicaoRotacao.Y;
+                    double deltaX = e.X - ultimaPosicaoObj.X;
+                    double deltaY = e.Y - ultimaPosicaoObj.Y;
 
                     // Movimento horizontal do mouse → rotação no eixo Y
                     // Movimento vertical do mouse   → rotação no eixo X
                     rotacaoY += deltaX * 0.5; // 0.5 = sensibilidade
                     rotacaoX += deltaY * 0.5;
 
-                    ultimaPosicaoRotacao = e.Location;
+                    ultimaPosicaoObj = e.Location;
                     
                 }
                 Redesenhar();
@@ -175,37 +212,76 @@ namespace VisualizadorObj3D
             obj3d.MultiplicaMatrizRotacao((int)rotacaoY, 'y');
             
             obj3d.MultiplicaMatrizEscala(escala, escala, escala);
-            
 
-            Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c);
+            Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c, eliminarFacesOcultas);
             pictureBox1.Image = imagem;
         }
 
-        private void btnLimpar_Click(object sender, EventArgs e)
+        
+
+
+        // ======= PROJEÇÕES =======
+        private void btAplicar_Click(object sender, EventArgs e)
         {
-            
+            if (obj3d != null)
+            {
+                if (rbLateral.Checked)
+                {
+                    c = 'l';
+                }
+                else if (rbFrontal.Checked)
+                {
+                    c = 'f';
+                }
+                else if (rbSuperior.Checked)
+                {
+                    c = 's';
+                }
+                else if (rbCavaleira.Checked)
+                {
+                    c = 'c';
+                }
+                else if (rbCabinete.Checked)
+                {
+                    c = 'b';
+                }
+                else if (rb1Ponto.Checked)
+                {
+                    c = 'p';
+                }
+                else
+                {
+                    c = ' ';
+                }
+
+                ehProjecao = true;
+                eliminarFacesOcultas = checkBoxEliminarFacesOcultas.Checked;
+
+                Redesenhar();
+            }
         }
 
-        private void btAplicar_Click_1(object sender, EventArgs e)
+        private void btnLimparProjecoes_Click(object sender, EventArgs e)
         {
-           
-            if (rbLateral.Checked)
+            if (obj3d != null)
             {
-                c = 'l';
+                ehProjecao = false;
+                c = ' ';
+
+                eliminarFacesOcultas = false;
+
+                Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c, eliminarFacesOcultas);
+                pictureBox1.Image = imagem;
             }
-            else
-            if (rbFrontal.Checked)
-            {
-                c = 'f';
-            }
-            else
-            if (rbSuperior.Checked)
-            {
-                c = 's';
-            }
-            ehProjecao = true;
-            Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c);
-            pictureBox1.Image = imagem;
         }
+        //============FIM PROJEÇÕES =============
+
+
+
+
+
+        
+
+
     }
 }
