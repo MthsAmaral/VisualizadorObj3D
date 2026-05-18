@@ -11,7 +11,7 @@ namespace VisualizadorObj3D
     {
         private double escala = 1; // 1 por default
         private Obj3D obj3d; // Variável para armazenar o objeto 3D carregado
-        private Projetor projetor;
+
 
         private Point ultimaPosicaoObj;
 
@@ -53,7 +53,6 @@ namespace VisualizadorObj3D
                 translacaoX = translacaoY = 0; // reseta translação para o valor padrão
                 rotacaoX = rotacaoY = 0;
 
-                projetor = new Projetor();
                 obj3d = new Obj3D(openFileDialog.FileName);
                 obj3d.MultiplicaMatrizEscala(1,1,1);
 
@@ -265,6 +264,16 @@ namespace VisualizadorObj3D
         {
             if (obj3d != null)
             {
+                // desmarca os radio buttons de projeção
+                rbFrontal.Checked = false;
+                rbLateral.Checked = false;
+                rbSuperior.Checked = false;
+                rbCavaleira.Checked = false;
+                rbCabinete.Checked = false;
+                rb1Ponto.Checked = false;
+                checkBoxEliminarFacesOcultas.Checked = false;
+
+
                 ehProjecao = false;
                 c = ' ';
 

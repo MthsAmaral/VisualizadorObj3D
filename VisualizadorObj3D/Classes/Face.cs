@@ -7,16 +7,13 @@ namespace ProcessamentoImagens.classes
 {
     internal class Face
     {
-        private List<Reta> ArestasOriginais { get; set; }
-        private List<Reta> ArestasNormalizadas { get; set; }
+       
         public List<int> IndicesVertices { get; set; } //tratar depois
         public List<int> IndicesVerticesTextura { get; set; } //tratar depois
         public List<int> IndicesVerticesNormais { get; set; } //tratar depois
 
         public Face()
         {
-            ArestasOriginais = new List<Reta>();
-            ArestasNormalizadas = new List<Reta>();
             IndicesVertices = new List<int>();
             IndicesVerticesTextura = new List<int>();
             IndicesVerticesNormais = new List<int>();
