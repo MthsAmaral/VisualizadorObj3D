@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VisualizadorObj3D.Classes
 {
-    internal class Point2DReal
+    public class Point2DReal
     {
         public double X { get; set; }
         public double Y { get; set; }

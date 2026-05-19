@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace ProcessamentoImagens.classes
 {
-    internal class PointReal
+    public class PointReal
     {
         public double X { get; set; }
         public double Y { get; set; }
@@ -22,5 +22,6 @@ namespace ProcessamentoImagens.classes
             Y = y;
             Z = z;
         }
+
     }
 }

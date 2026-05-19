@@ -32,8 +32,7 @@ namespace ProcessamentoImagens.classes
             VerticesAtuais = new List<PointReal>();
             VerticesProjetados = new List<PointReal>();
             Faces = new List<Face>();
-            MatrizAcumulada = new double[4, 4];
-            GerarMatrizIdentidade(); // para a matriz acumulada 4x4
+            MatrizAcumulada = OperacaoMatriz.GerarMatrizIdentidade();
         }
 
         public Obj3D(string filePath) : this()
@@ -130,150 +129,25 @@ namespace ProcessamentoImagens.classes
                 }
             }
         }
-
-
-
-        //================== PROJEÇÕES =========================
-        private void ProjetarVertices(char tipoProjecao)
+        public string[] LimparStringVazia(string[] array)
         {
-            /*
-                'f' = ortográfica frontal
-                'l' = ortográfica lateral
-                's' = ortográfica superior
-
-                'c' = oblíqua cavaleira
-                'b' = oblíqua cabinet
-
-                'p' = perspectiva 1 ponto
-                ' ' = sem projeção
-             */
-            VerticesProjetados.Clear();
-
-            //frontal superior ou lateral
-            if (tipoProjecao == 'f' || tipoProjecao == 's' || tipoProjecao == 'l')
-            {
-                ProjecaoOrtografica(tipoProjecao);
-            }
-            else if (tipoProjecao == 'c' || tipoProjecao == 'b')
-            {
-                ProjecaoObliqua(tipoProjecao);
-            }
-            else if (tipoProjecao == 'p')
-            {
-                ProjecaoPerspectiva1Ponto(200);
-            }
-            else
-            {
-                foreach (PointReal p in VerticesAtuais)
-                {
-                    VerticesProjetados.Add(new PointReal(p.X, p.Y, p.Z));
-                }
-            }
+            return array.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
         }
 
 
-        private void ProjecaoOrtografica(char c)
-        {
-            VerticesProjetados.Clear();
-            for (int i = 0; i < VerticesAtuais.Count; i++)
-            {
-                PointReal pontoReal = VerticesAtuais[i];
-                PointReal ponto = new PointReal();
-
-                if (c == 'l') // mantem y e z
-                {
-                    ponto.X = pontoReal.Z;
-                    ponto.Y = pontoReal.Y;
-                }
-                else
-                if (c == 'f') // mantem x e y
-                {
-                    ponto.X = pontoReal.X;
-                    ponto.Y = pontoReal.Y;
-                }
-                else
-                if (c == 's') // mantem x e z
-                {
-                    ponto.X = pontoReal.X;
-                    ponto.Y = pontoReal.Z;
-                }
-
-                VerticesProjetados.Add(ponto);
-            }
-
-        }
-
-        //projeção obliqua
-        private void ProjecaoObliqua(char op)
-        {
-            double l, angulo;
-
-            if (op == 'c')//cavaleira
-            {
-                l = 1.0;
-                angulo = 45.0;
-            }
-            else //cabinet
-            {
-                l = 0.5;
-                angulo = 63.4;
-            }
-
-            double anguloRadianos = angulo * Math.PI / 180.0;
-            double cos = Math.Cos(anguloRadianos);
-            double sin = Math.Sin(anguloRadianos);
-
-            foreach (PointReal p in VerticesAtuais)
-            {
-                PointReal projetado = new PointReal();
-
-                projetado.X = p.X + p.Z * l * cos;
-                projetado.Y = p.Y + p.Z * l * sin;
-                projetado.Z = 0;
-
-                VerticesProjetados.Add(projetado);
-            }
-        }
-
-        private void ProjecaoPerspectiva1Ponto(double d)
-        {
-            VerticesProjetados.Clear();
-
-            foreach (PointReal p in VerticesAtuais)
-            {
-                PointReal projetado = new PointReal();
-
-                // empurra o objeto para frente no eixo Z
-                double zCamera = p.Z + 400;
-
-                // evita divisão por zero ou valores muito pequenos
-                if (zCamera < 1)
-                {
-                    zCamera = 1;
-                }
-
-                projetado.X = p.X * d / zCamera;
-                projetado.Y = p.Y * d / zCamera;
-                projetado.Z = 0;
-
-                VerticesProjetados.Add(projetado);
-            }
-        }
-
-
+        //====================================================================================================================================================
+        //================== ELIMINAR DE FACES OCULTAS =========================
         private bool FaceEhVisivel(Face face, char tipoProjecao)
         {
             if (face.IndicesVertices.Count < 3)
-            {
                 return false;
-            }
 
             PointReal normal = CalcularNormalFace(face);
 
             int i = face.IndicesVertices[0] - 1;
             PointReal pontoFace = VerticesAtuais[i];
 
-            PointReal oa = ObterVetorObservacao(pontoFace, tipoProjecao);
+            PointReal oa = Projecao.ObterVetorObservacao(pontoFace, tipoProjecao);
 
             double produtoEscalar = oa.X * normal.X +
                                     oa.Y * normal.Y +
@@ -285,7 +159,6 @@ namespace ProcessamentoImagens.classes
             // zero = lateral (não visível)
             return produtoEscalar < 0;
         }
-
         private PointReal CalcularNormalFace(Face face)
         {
             if (face.IndicesVertices.Count < 3)
@@ -322,57 +195,13 @@ namespace ProcessamentoImagens.classes
             return normal;
         }
 
-        private PointReal ObterVetorObservacao(PointReal pontoFace, char tipoProjecao)
-        {
-            switch (tipoProjecao)
-            {
-                case 'f': // ortográfica frontal no plano XY
-                    return new PointReal(0, 0, -1);
-
-                case 'l': // lateral
-                    return new PointReal(-1, 0, 0);
-
-                case 's': // superior
-                    return new PointReal(0, -1, 0);
-
-                case 'c': // cavaleira
-                    {
-                        double l = 1.0;
-                        double alpha = 45.0 * Math.PI / 180.0;
-                        return new PointReal(l * Math.Cos(alpha), l * Math.Sin(alpha), -1);
-                    }
-
-                case 'b': // cabinet
-                    {
-                        double l = 0.5;
-                        double alpha = 45.0 * Math.PI / 180.0;
-                        return new PointReal(l * Math.Cos(alpha), l * Math.Sin(alpha), -1);
-                    }
-
-                case 'p': // perspectiva: observador na origem
-                    {
-                        double distanciaCamera = 400.0;
-
-                        PointReal pontoCamera = new PointReal(
-                            pontoFace.X,
-                            pontoFace.Y,
-                            pontoFace.Z + distanciaCamera
-                        );
-
-                        return new PointReal(pontoCamera.X, pontoCamera.Y, pontoCamera.Z);
-                    }
-
-                default://frontal
-                    return new PointReal(0, 0, -1);
-            }
-        }
-
-        // ================== FIM PROJEÇÕES ==================
 
 
 
 
-        //desenhar o objeto com base nos vértices e faces recuperados do arquivo .obj
+
+        //====================================================================================================================================================
+        // ============== DESENHAR o objeto com base nos vértices e faces recuperados do arquivo .obj
         public PointReal ConverterParaTela(PointReal p, int largura, int altura)
         {
             double x = p.X + largura / 2;
@@ -386,7 +215,7 @@ namespace ProcessamentoImagens.classes
             VerticesAtuais.Clear();
             foreach (PointReal vertice in VerticesOriginais)
             {
-                PointReal verticeTransformado = AplicarMatriz(vertice);
+                PointReal verticeTransformado = OperacaoMatriz.AplicarMatriz(vertice, MatrizAcumulada);
                 //PointReal verticeProjetado = ConverterParaTela(verticeTransformado, largura, altura);
                 VerticesAtuais.Add(verticeTransformado);
             }
@@ -399,7 +228,9 @@ namespace ProcessamentoImagens.classes
             AtualizarVerticesAtuais(largura, altura);//passa tamanho real imagem
 
             if (ehProjecao)
-                ProjetarVertices(tipoProjecao);
+                VerticesProjetados = Projecao.Projetar(VerticesAtuais, tipoProjecao);
+            else
+                VerticesProjetados = new List<PointReal>(VerticesAtuais);
 
             // Recria só se o tamanho mudou
             if (bitmap == null || bitmap.Width != largura || bitmap.Height != altura)
@@ -445,20 +276,10 @@ namespace ProcessamentoImagens.classes
                                 if (atualIndex >= 0 && atualIndex < VerticesAtuais.Count &&
                                     proximoIndex >= 0 && proximoIndex < VerticesAtuais.Count)
                                 {
-                                    PointReal p1;
-                                    PointReal p2;
-                                    if (!ehProjecao)
-                                    {
-                                        p1 = VerticesAtuais[atualIndex];
-                                        p2 = VerticesAtuais[proximoIndex];
-                                    }
-                                    else
-                                    {
-                                        p1 = VerticesProjetados[atualIndex];
-                                        p2 = VerticesProjetados[proximoIndex];
-                                    }
-                                    p1 = ConverterParaTela(p1, largura, altura);
-                                    p2 = ConverterParaTela(p2, largura, altura);
+                                    
+                                    //VerticesProjetados SEMPRE tem vértices (se ehProjecao = falso, são cópias dos atuais)
+                                    PointReal p1 = ConverterParaTela(VerticesProjetados[atualIndex], largura, altura);
+                                    PointReal p2 = ConverterParaTela(VerticesProjetados[proximoIndex], largura, altura);
 
                                     if (Math.Abs(p1.X) < 10000 && Math.Abs(p1.Y) < 10000 &&
                                             Math.Abs(p2.X) < 10000 && Math.Abs(p2.Y) < 10000)
@@ -470,7 +291,6 @@ namespace ProcessamentoImagens.classes
                                 }
                             }
                         }
-                        
                     }
                 }
             }
@@ -481,149 +301,7 @@ namespace ProcessamentoImagens.classes
             return bitmap;
         }
 
-
-
-
-
-
-
-
-
-        //aplica matriz acumulada para transformar os vértices originais do objeto, retornando os vértices transformados
-        public PointReal AplicarMatriz(PointReal p)
-        {
-            double x = p.X * MatrizAcumulada[0, 0] + p.Y * MatrizAcumulada[0, 1] + p.Z * MatrizAcumulada[0, 2] + MatrizAcumulada[0, 3];
-            double y = p.X * MatrizAcumulada[1, 0] + p.Y * MatrizAcumulada[1, 1] + p.Z * MatrizAcumulada[1, 2] + MatrizAcumulada[1, 3];
-            double z = p.X * MatrizAcumulada[2, 0] + p.Y * MatrizAcumulada[2, 1] + p.Z * MatrizAcumulada[2, 2] + MatrizAcumulada[2, 3];
-
-            return new PointReal(x, y, z);
-        }
-
-
-        public string[] LimparStringVazia(string[] array)
-        {
-            return array
-                .Where(s => !string.IsNullOrWhiteSpace(s))
-                .ToArray();
-        }
-
-        // ==========================================================================================
-        // OPERAÇÕES COM MATRIZES
-        // ==========================================================================================
-
-
-        public void GerarMatrizIdentidade()
-        {
-            for (int i = 0; i < 4; i++)
-                for (int j = 0; j < 4; j++)
-                    if (i == j)
-                        MatrizAcumulada[i, j] = 1;
-                    else
-                        MatrizAcumulada[i, j] = 0;
-        }
-
-        public void SetMatrizXY(int x, int y, double valor)
-        {
-            if (x > -1 && x < 4 && y > -1 && y < 4)
-                MatrizAcumulada[x, y] = valor;
-        }
-
-        private void MultiplicaMatrizAcumulada(double[,] matriz, double[,] resultado)
-        {
-            for (int l = 0; l < 4; l++)
-            {
-                for (int c = 0; c < 4; c++)
-                {
-                    double valor = 0;
-                    for (int i = 0; i < 4; i++)
-                        valor += MatrizAcumulada[l, i] * matriz[i, c];
-
-                    //setar na matriz de resultado
-                    resultado[l, c] = valor;
-                }
-            }
-        }
-
-        private void SetarTodaMatrizAcumulada(double[,] resultado)
-        {
-            for (int i = 0; i < 4; i++)
-                for (int j = 0; j < 4; j++)
-                    SetMatrizXY(i, j, resultado[i, j]);
-        }
-
-
-        //multiplicação de matrizes para acumular as transformações, só alterar a matriz acumulada
-        public void MultiplicaMatrizTranslacao(double dx, double dy, double dz)
-        {
-            double[,] matrizTranslacao = new double[4, 4] {
-                { 1, 0, 0, dx },
-                { 0, 1, 0, dy },
-                { 0, 0, 1, dz },
-                { 0, 0, 0, 1 }
-            };
-            double[,] resultado = new double[4, 4];
-
-            MultiplicaMatrizAcumulada(matrizTranslacao, resultado);
-            SetarTodaMatrizAcumulada(resultado);
-        }
-
-        public void MultiplicaMatrizEscala(double escalaX, double escalaY, double escalaZ)
-        {
-            double[,] matrizEscala = new double[4, 4] {
-                { escalaX, 0, 0, 0 },
-                { 0, escalaY, 0, 0 },
-                { 0, 0, escalaZ, 0 },
-                { 0, 0, 0, 1}
-            };
-            double[,] resultado = new double[4, 4];
-
-            MultiplicaMatrizAcumulada(matrizEscala, resultado);
-            SetarTodaMatrizAcumulada(resultado);
-        }
-
-        public void MultiplicaMatrizRotacao(int grau, char eixo)
-        {
-            double cosseno = Math.Cos(grau * Math.PI / 180); //quando passado em radianos, funciona normalmente
-            double seno = Math.Sin(grau * Math.PI / 180);    //quando passado em radianos, funciona normalmente
-            double[,] resultado = new double[4, 4];
-            double[,] matrizRotacao = new double[4, 4];
-            if (eixo== 'x')
-            {
-                matrizRotacao = new double[4, 4] {
-                    { 1, 0, 0, 0 },
-                    { 0, cosseno, -seno, 0 },
-                    { 0, seno, cosseno, 0 },
-                    { 0, 0, 0, 1 }
-                };
-            }
-            else if (eixo == 'y')
-            {
-                matrizRotacao = new double[4, 4] {
-                    { cosseno, 0, seno, 0 },
-                    { 0, 1, 0, 0 },
-                    { -seno, 0, cosseno, 0 },
-                    { 0, 0, 0, 1 }
-                };
-            }
-            else
-            {
-                matrizRotacao = new double[4, 4] {
-                    { cosseno, -seno, 0, 0 },
-                    { seno, cosseno, 0, 0 },
-                    { 0, 0, 1, 0 },
-                    { 0, 0, 0, 1 }
-                };
-            }
-
-            //Aplicar a transformação em questão -> rotação
-            MultiplicaMatrizAcumulada(matrizRotacao, resultado);
-            SetarTodaMatrizAcumulada(resultado);
-        }
-
-
-
-
-        //algoritmo de Bresenham para desenhar as linhas entre os vértices projetados
+        //Bresenham: desenhar as linhas entre os vértices projetados
         unsafe public static void Bresenham(byte* origem, int stride, int width, int height,
                             double x1double, double y1double, double x2double, double y2double, int R, int G, int B)
         {
@@ -672,7 +350,7 @@ namespace ProcessamentoImagens.classes
             int erro = dx / 2;
 
             int y = y1;
-            
+
             // Percorre todos os valores de x
             for (int x = x1; x <= x2; x++)
             {
@@ -712,7 +390,15 @@ namespace ProcessamentoImagens.classes
             }
         }
 
-        // Z-Buffer
+
+
+
+
+
+
+
+        // ====================================================================================================================================================
+        // ========  Z-Buffer =========
         public void PreencherObjeto3D(Color cor)
         {
             int width = bitmap.Width;
@@ -875,7 +561,38 @@ namespace ProcessamentoImagens.classes
                 *(pixel++) = (byte)R;
             }
         }
-    }
 
-    
+
+
+
+
+
+
+
+
+        //====================================================================================================================================================
+        // OPERAÇÕES COM MATRIZES
+        public void ResetarMatrizAcumulada()
+        {
+            MatrizAcumulada = OperacaoMatriz.GerarMatrizIdentidade();
+        }
+
+        public void MultiplicaMatrizTranslacao(double dx, double dy, double dz)
+        {
+            double[,] translacao = OperacaoMatriz.CriarTranslacao(dx, dy, dz);
+            MatrizAcumulada = OperacaoMatriz.Multiplicar(MatrizAcumulada, translacao);
+        }
+
+        public void MultiplicaMatrizEscala(double escalaX, double escalaY, double escalaZ)
+        {
+            double[,] escala = OperacaoMatriz.CriarEscala(escalaX, escalaY, escalaZ);
+            MatrizAcumulada = OperacaoMatriz.Multiplicar(MatrizAcumulada, escala);
+        }
+
+        public void MultiplicaMatrizRotacao(int grau, char eixo)
+        {
+            double[,] rotacao = OperacaoMatriz.CriarRotacao(grau, eixo);
+            MatrizAcumulada = OperacaoMatriz.Multiplicar(MatrizAcumulada, rotacao);
+        }
+    }
 }

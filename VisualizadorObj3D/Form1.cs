@@ -9,28 +9,27 @@ namespace VisualizadorObj3D
 {
     public partial class Form1 : Form
     {
-        private double escala = 1; // 1 por default
         private Obj3D obj3d; // Variável para armazenar o objeto 3D carregado
-
-
         private Point ultimaPosicaoObj;
 
+   
+        private double escala = 1; // 1 por default
         //translação
         private bool arrastando = false;
         private double translacaoX = 0;
         private double translacaoY = 0;
-
         //rotação
         private bool rotacionando = false;
         private double rotacaoX = 0;
         private double rotacaoY = 0;
-
         // Flags
         private bool ehProjecao = false;
         private bool eliminarFacesOcultas = false;
-
         //Projecao Ortografica
         public static char c = ' ';
+
+
+
         public Form1()
         {
             InitializeComponent();
@@ -41,6 +40,7 @@ namespace VisualizadorObj3D
             // Registra o evento MouseWheel manualmente
             pictureBox1.MouseWheel += pictureBox1_MouseWheel;
         }
+
 
         private void btnAbrirArquivo_Click(object sender, EventArgs e)
         {
@@ -89,7 +89,7 @@ namespace VisualizadorObj3D
                 rotacionando = false;
 
                 // restaura a matriz acumulada para identidade
-                obj3d.GerarMatrizIdentidade();
+                obj3d.ResetarMatrizAcumulada();
 
                 eliminarFacesOcultas = false;
 
@@ -100,21 +100,21 @@ namespace VisualizadorObj3D
         }
 
 
+        //====================================================================================================================================================
+        // ======= TRANSFORMAÇÕES =======
 
-        //---------------------------------------------------------------
         // MouseWheel(scroll) para aumentar ou diminuir a ESCALA
-        //--------------------------------------------------------------
         private void pictureBox1_MouseWheel(object sender, MouseEventArgs e)
         {
             if(obj3d != null)
             {
                 if (e.Delta > 0)
                 {
-                    escala += 0.5/*1*/; // Aumenta a escala em 10%
+                    escala += 0.5; // Aumenta a escala em x%
                 }
                 else
                 {
-                    escala -= 0.5/*1*/; // Diminui a escala em 10%
+                    escala -= 0.5; // Diminui a escala em x%
                     if (escala < 0.1) // Evita que a escala fique muito pequena
                     {
                         escala = 0.1;
@@ -129,11 +129,8 @@ namespace VisualizadorObj3D
 
 
 
-        //---------------------------------------------------------------
         //TRANSLAÇÃO = esquerdo do mouse
         //ROTAÇÃO = direito do mouse
-        //-------------------------------------------------------------
-       
 
         //botão pressionado pega posição do mouse e ativa arrastar
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -201,9 +198,9 @@ namespace VisualizadorObj3D
 
         private void Redesenhar()
         {
-            obj3d.GerarMatrizIdentidade();
+            obj3d.ResetarMatrizAcumulada();//reseta a matriz acumulada para identidade antes de aplicar as transformações atuais
 
-           
+
             // primeiro translação, depois rotação e por último escala
             obj3d.MultiplicaMatrizTranslacao(translacaoX, -translacaoY, 0);
             
@@ -216,9 +213,10 @@ namespace VisualizadorObj3D
             pictureBox1.Image = imagem;
         }
 
-        
 
 
+
+        //====================================================================================================================================================
         // ======= PROJEÇÕES =======
         private void btAplicar_Click(object sender, EventArgs e)
         {
@@ -284,15 +282,16 @@ namespace VisualizadorObj3D
             }
         }
 
+
+
+
+        //====================================================================================================================================================
+        // ======= Z-Buffer =======
         private void btnZBuffer_Click(object sender, EventArgs e)
         {
             obj3d.PreencherObjeto3D(Color.Red);
             pictureBox1.Image = obj3d.bitmap;
         }
-        //============FIM PROJEÇÕES =============
-
-
-
 
 
 

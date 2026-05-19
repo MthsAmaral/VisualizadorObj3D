@@ -35,6 +35,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnZBuffer = new System.Windows.Forms.Button();
             this.btnLimparProjecoes = new System.Windows.Forms.Button();
             this.checkBoxEliminarFacesOcultas = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -49,7 +50,6 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.btnZBuffer = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panelCabecalho.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -98,7 +98,7 @@
             // 
             // btnRedefinirObjOriginal
             // 
-            this.btnRedefinirObjOriginal.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.btnRedefinirObjOriginal.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
             this.btnRedefinirObjOriginal.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnRedefinirObjOriginal.FlatAppearance.BorderSize = 0;
             this.btnRedefinirObjOriginal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -151,9 +151,24 @@
             this.panel2.Size = new System.Drawing.Size(367, 210);
             this.panel2.TabIndex = 5;
             // 
+            // btnZBuffer
+            // 
+            this.btnZBuffer.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.btnZBuffer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnZBuffer.FlatAppearance.BorderSize = 0;
+            this.btnZBuffer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnZBuffer.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnZBuffer.Location = new System.Drawing.Point(16, 169);
+            this.btnZBuffer.Name = "btnZBuffer";
+            this.btnZBuffer.Size = new System.Drawing.Size(68, 23);
+            this.btnZBuffer.TabIndex = 14;
+            this.btnZBuffer.Text = "Z-Buffer";
+            this.btnZBuffer.UseVisualStyleBackColor = false;
+            this.btnZBuffer.Click += new System.EventHandler(this.btnZBuffer_Click);
+            // 
             // btnLimparProjecoes
             // 
-            this.btnLimparProjecoes.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.btnLimparProjecoes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
             this.btnLimparProjecoes.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnLimparProjecoes.FlatAppearance.BorderSize = 0;
             this.btnLimparProjecoes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -308,21 +323,6 @@
             this.textBox2.TabIndex = 9;
             this.textBox2.Text = "Ortográfica";
             this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // btnZBuffer
-            // 
-            this.btnZBuffer.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.btnZBuffer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.btnZBuffer.FlatAppearance.BorderSize = 0;
-            this.btnZBuffer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnZBuffer.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnZBuffer.Location = new System.Drawing.Point(16, 169);
-            this.btnZBuffer.Name = "btnZBuffer";
-            this.btnZBuffer.Size = new System.Drawing.Size(68, 23);
-            this.btnZBuffer.TabIndex = 14;
-            this.btnZBuffer.Text = "Z-Buffer";
-            this.btnZBuffer.UseVisualStyleBackColor = false;
-            this.btnZBuffer.Click += new System.EventHandler(this.btnZBuffer_Click);
             // 
             // Form1
             // 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProcessamentoImagens.Classes
 {
-    internal class PointInteiro
+    public class PointInteiro
     {
         public int X { get; set; }
         public int Y { get; set; }

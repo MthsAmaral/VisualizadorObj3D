@@ -48,12 +48,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\EdgeTable.cs" />
-    <Compile Include="Classes\NoEdgeTable.cs" />
+    <Compile Include="Classes\OperacaoMatriz.cs" />
+    <Compile Include="Classes\Projecao.cs" />
+    <Compile Include="Classes\TabelaArestas\EdgeTable.cs" />
+    <Compile Include="Classes\TabelaArestas\NoEdgeTable.cs" />
     <Compile Include="Classes\Obj3D.cs" />
-    <Compile Include="Classes\Point2DReal.cs" />
-    <Compile Include="Classes\PointInteiro.cs" />
-    <Compile Include="Classes\PointReal.cs" />
+    <Compile Include="Classes\TiposPontos\Point2DReal.cs" />
+    <Compile Include="Classes\TiposPontos\PointInteiro.cs" />
+    <Compile Include="Classes\TiposPontos\PointReal.cs" />
     <Compile Include="Classes\Face.cs" />
     <Compile Include="Classes\Reta.cs" />
     <Compile Include="Form1.cs">
