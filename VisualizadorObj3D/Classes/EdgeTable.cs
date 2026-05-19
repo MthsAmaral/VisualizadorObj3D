@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProcessamentoImagens.classes.EdgeTable
+namespace ProcessamentoImagens.classes
 {
     internal class EdgeTable
     {
@@ -110,7 +110,7 @@ namespace ProcessamentoImagens.classes.EdgeTable
                 while (j != null)
                 {
                     //ordena pela chave "xMin" mas no caso de empate utiliza o "inc"
-                    if (j.xMin < menor || (j.xMin == menor && j.inc < posMenor.inc))
+                    if (j.xMin < menor || (j.xMin == menor && j.xInc < posMenor.xInc))
                     {
                         menor = j.xMin;
                         posMenor = j;
@@ -120,15 +120,22 @@ namespace ProcessamentoImagens.classes.EdgeTable
 
                 int auxYMax = posMenor.yMax;
                 double auxXMin = posMenor.xMin;
-                double auxInc = posMenor.inc;
+                double auxXInc = posMenor.xInc;
+                double auxZmin = posMenor.zMin;
+                double auxZInc = posMenor.zInc;
 
                 posMenor.yMax = i.yMax;
                 posMenor.xMin = i.xMin;
-                posMenor.inc = i.inc;
+                posMenor.xInc = i.xInc;
+                posMenor.zMin = i.zMin;
+                posMenor.zInc = i.zInc;
+
 
                 i.yMax = auxYMax;
                 i.xMin = auxXMin;
-                i.inc = auxInc;
+                i.xInc = auxXInc;
+                i.zInc = auxZInc;
+                i.zMin = auxZmin;
 
                 i = i.prox;
             }

@@ -1,127 +1,168 @@
 ﻿
+using ProcessamentoImagens.Classes;
+
 namespace ProcessamentoImagens.classes
 {
     internal class Reta
     {
         // Reta adaptada para 3D
-        private PointReal Ini { get; set; }
-        private PointReal Fim { get; set; }
+        private PointInteiro Ini { get; set; }
+        private PointInteiro Fim { get; set; }
 
         public Reta()
         {
             // inicializando os pontos da minha reta
-            Ini = new PointReal(-1,-1,-1);
-            Fim = new PointReal(-1,-1,-1);
+            Ini = new PointInteiro(-1,-1,-1);
+            Fim = new PointInteiro(-1,-1,-1);
         }
 
-        public Reta(PointReal ini, PointReal fim)
+        public Reta(PointInteiro ini, PointInteiro fim)
         {
             this.Ini = ini;
             this.Fim = fim;
         }
 
-        public PointReal GetIni()
+        public PointInteiro GetIni()
         {
             return Ini;
         }
 
-        public PointReal GetFim()
+        public PointInteiro GetFim()
         {
             return Fim;
         }
 
         //vertice inicial
-        public double GetIniX()
+        public int GetIniX()
         {
             return Ini.X;
         }
-        public double GetIniY()
+        public int GetIniY()
         {
             return Ini.Y;
         }
 
-        public double GetIniZ()
+        public int GetIniZ()
         {
             return Ini.Z;
         }
 
         //vertice final
-        public double GetFimX()
+        public int GetFimX()
         {
             return Fim.X;
         }
 
-        public double GetFimY()
+        public int GetFimY()
         {
             return Fim.Y;
         }
 
-        public double GetFimZ()
+        public int GetFimZ()
         {
             return Fim.Z;
         }
 
-        // usado para pintar o polígono
-        //public int GetYMin()
-        //{
-        //    if(Ini.Y < Fim.Y)
-        //        return Ini.Y;
-            
-        //    if(Fim.Y < Ini.Y)
-        //        return Fim.Y;
+        //usado para pintar o polígono
+        public int GetYMin()
+        {
+            if (Ini.Y < Fim.Y)
+                return Ini.Y;
 
-        //    return Ini.Y; //vai retornar aqui caso os dois forem iguais -> empate
-        //}
+            if (Fim.Y < Ini.Y)
+                return Fim.Y;
 
-        //public int GetYMax()
-        //{
-        //    if(Ini.Y > Fim.Y)
-        //        return Ini.Y;
-            
-        //    if(Fim.Y > Ini.Y)
-        //        return Fim.Y;
+            return Ini.Y; //vai retornar aqui caso os dois forem iguais -> empate
+        }
 
-        //    return Ini.Y; //vai retornar aqui caso os dois forem iguais -> empate
-        //}
+        public int GetYMax()
+        {
+            if (Ini.Y > Fim.Y)
+                return Ini.Y;
 
-        //public int GetXMin()
-        //{
-        //    //primeiro preciso descobrir qual dos Y é maior
-        //    if(Ini.Y < Fim.Y)
-        //        return Ini.X;
-            
-        //    if(Fim.Y < Ini.Y)
-        //        return Fim.X;
+            if (Fim.Y > Ini.Y)
+                return Fim.Y;
 
-        //    //passa os dois if's anteriores se os y's forem iguais -> na mesma linha
-        //    if(Ini.X < Fim.X)
-        //        return Ini.X;
+            return Ini.Y; //vai retornar aqui caso os dois forem iguais -> empate
+        }
 
-        //    if(Fim.X < Ini.X)
-        //        return Fim.X;
+        public int GetXMin()
+        {
+            //primeiro preciso descobrir qual dos Y é maior
+            if (Ini.Y < Fim.Y)
+                return Ini.X;
 
-        //    // vem nesse return se os dois pontos são exatamente iguais
-        //    return Ini.X;
-        //}
+            if (Fim.Y < Ini.Y)
+                return Fim.X;
 
-        //public int GetXMax()
-        //{
-        //    //primeiro preciso descobrir qual dos Y é maior
-        //    if(Ini.Y > Fim.Y)
-        //        return Ini.X;
-            
-        //    if(Fim.Y > Ini.Y)
-        //        return Fim.X;
+            //passa os dois if's anteriores se os y's forem iguais -> na mesma linha
+            if (Ini.X < Fim.X)
+                return Ini.X;
 
-        //    //passa os dois if's anteriores se os y's forem iguais -> na mesma linha
-        //    if(Ini.X > Fim.X)
-        //        return Ini.X;
+            if (Fim.X < Ini.X)
+                return Fim.X;
 
-        //    if(Fim.X > Ini.X)
-        //        return Fim.X;
+            // vem nesse return se os dois pontos são exatamente iguais
+            return Ini.X;
+        }
 
-        //    // vem nesse return se os dois pontos são exatamente iguais
-        //    return Ini.X;
-        //}
+        public int GetXMax()
+        {
+            //primeiro preciso descobrir qual dos Y é maior
+            if (Ini.Y > Fim.Y)
+                return Ini.X;
+
+            if (Fim.Y > Ini.Y)
+                return Fim.X;
+
+            //passa os dois if's anteriores se os y's forem iguais -> na mesma linha
+            if (Ini.X > Fim.X)
+                return Ini.X;
+
+            if (Fim.X > Ini.X)
+                return Fim.X;
+
+            // vem nesse return se os dois pontos são exatamente iguais
+            return Ini.X;
+        }
+        public int GetZMin()
+        {
+            //primeiro preciso descobrir qual dos Y é maior
+            if (Ini.Y < Fim.Y)
+                return Ini.Z;
+
+            if (Fim.Y < Ini.Y)
+                return Fim.Z;
+
+            //passa os dois if's anteriores se os y's forem iguais -> na mesma linha
+            if (Ini.Z < Fim.Z)
+                return Ini.Z;
+
+            if (Fim.Z < Ini.Z)
+                return Fim.Z;
+
+            // vem nesse return se os dois pontos são exatamente iguais
+            return Ini.Z;
+        }
+        public int GetZMax()
+        {
+            //primeiro preciso descobrir qual dos Y é maior
+            if (Ini.Y > Fim.Y)
+                return Ini.Z;
+
+            if (Fim.Y > Ini.Y)
+                return Fim.Z;
+
+            //passa os dois if's anteriores se os y's forem iguais -> na mesma linha
+            if (Ini.Z > Fim.Z)
+                return Ini.Z;
+
+            if (Fim.Z > Ini.Z)
+                return Fim.Z;
+
+            // vem nesse return se os dois pontos são exatamente iguais
+            return Ini.Z;
+        }
     }
+    
 }

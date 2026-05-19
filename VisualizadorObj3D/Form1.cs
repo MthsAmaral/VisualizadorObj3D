@@ -29,8 +29,8 @@ namespace VisualizadorObj3D
         private bool ehProjecao = false;
         private bool eliminarFacesOcultas = false;
 
-        // Lado Projecao Ortografica
-        private char c = ' ';
+        //Projecao Ortografica
+        public static char c = ' ';
         public Form1()
         {
             InitializeComponent();
@@ -283,13 +283,19 @@ namespace VisualizadorObj3D
                 pictureBox1.Image = imagem;
             }
         }
+
+        private void btnZBuffer_Click(object sender, EventArgs e)
+        {
+            obj3d.PreencherObjeto3D(Color.Red);
+            pictureBox1.Image = obj3d.bitmap;
+        }
         //============FIM PROJEÇÕES =============
 
 
 
 
 
-        
+
 
 
     }

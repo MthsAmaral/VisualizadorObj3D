@@ -1,4 +1,3 @@
-using ProcessamentoImagens.classes.EdgeTable;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -20,9 +19,10 @@ namespace ProcessamentoImagens.classes
         private List<PointReal> VerticesProjetados { get; set; }
         private List<Face> Faces { get; set; }
         private double[,] MatrizAcumulada { get; set; } //tratar depois
+        private double[,] ZBuffer { get; set; }
+        private Color[,] FrameBuffer { get; set; }
 
-
-        private Bitmap bitmap;
+        public Bitmap bitmap { get; set; }
 
         public Obj3D()
         {
@@ -33,12 +33,13 @@ namespace ProcessamentoImagens.classes
             VerticesProjetados = new List<PointReal>();
             Faces = new List<Face>();
             MatrizAcumulada = new double[4, 4];
-
             GerarMatrizIdentidade(); // para a matriz acumulada 4x4
         }
 
         public Obj3D(string filePath) : this()
         {
+            //ZBuffer = new double[bitmap.Width, bitmap.Height];
+            //FrameBuffer = new Color[bitmap.Width, bitmap.Height];
             CarregarObj(filePath);
         }
 
@@ -710,106 +711,142 @@ namespace ProcessamentoImagens.classes
                 }
             }
         }
-        public List<PointReal> GetVerticesAtuais()
-        {
-            return VerticesAtuais;
-        }
-        public List<Face> GetFaces()
-        {
-            return Faces;
-        }
 
         // Z-Buffer
-        public static void PreencherObjeto3DZBuffer(Bitmap imageBitmap)
+        public void PreencherObjeto3D(Color cor)
         {
-            int width = imageBitmap.Width;
-            int height = imageBitmap.Height;
-
-            BitmapData data = imageBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-
+            int width = bitmap.Width;
+            int height = bitmap.Height;
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
             int stride = data.Stride;
 
             unsafe
             {
-                byte* src = (byte*)data.Scan0.ToPointer();
-
-                int yMax = poligono.GetYMax();
-                EdgeTable[] et = new EdgeTable[yMax + 1]; //vetor de tamanho yMax, para integrar todas as linhas possíveis
-                FormarEdgeTable(et, poligono);
-
-                int yMin = poligono.GetYMin();
-                int y = yMin;
-                EdgeTable aet = new EdgeTable();
-                while (!IsVectorEdgeEmpty(et, et.Length) || aet.Count() > 0)
+                List<Face> facesVisiveis = GetFacesVisiveis(); //possível remoção
+                for (int i = 0; i < facesVisiveis.Count; i++)
                 {
-                    //pegar todos os elementos da posição [y]
-                    if (y > -1 && y < et.Length && et[y] != null)
-                    {
-                        NoEdgeTable atual = et[y].GetNoEdgeTableAt(0);
-
-                        while (atual != null)
-                        {
-                            NoEdgeTable prox = atual.prox;
-
-                            atual.prox = null;
-                            aet.Add(atual);
-
-                            atual = prox;
-                        }
-
-                        et[y] = null;
-                    }
-
-                    //ordenar a lista de available
-                    aet.Sort();
-
-                    //remover os elementos (nós) com yMax == y
-                    aet.RemoveAllYMax(y);
-
-                    //desenhar os pixels utilizando os pares de coordenadas da AET
-                    int quant = aet.Count();
-                    for (int i = 0; i < (quant / 2); i++)
-                    {
-                        NoEdgeTable par1 = aet.GetNoEdgeTableAt(i * 2);
-                        NoEdgeTable par2 = aet.GetNoEdgeTableAt(i * 2 + 1);
-
-                        //pintar do (xMin par1) até (xMin par2)
-                        int limite = (int)Math.Ceiling(par2.xMin);
-                        for (int j = (int)Math.Ceiling(par1.xMin); j < limite; j++)
-                            PintaPixel(src, stride, width, height, j, y, Color.Orange.R, Color.Orange.G, Color.Orange.B);
-                    }
-
-                    //atualizar os xMin utilizando os incrementos
-                    for (int i = 0; i < aet.Count(); i++)
-                        aet.GetNoEdgeTableAt(i).Incrementar();
-
-                    y++;
+                    PreencherFaceZBuffer(facesVisiveis[i], cor, data, width, height);
                 }
             }
 
-            imageBitmap.UnlockBits(data);
+            bitmap.UnlockBits(data);
+        }
+        private List<Face> GetFacesVisiveis()
+        {
+            List<Face> visiveis = new List<Face>();
+
+            foreach(Face f in Faces)
+                if(FaceEhVisivel(f, Form1.c))
+                    visiveis.Add(f);
+
+            return visiveis;
+        }
+        private double GetYMax(Face face)
+        {
+            List<int> indicesVertices = face.IndicesVertices;
+            double maior = 0;
+            for (int i = 0; i < indicesVertices.Count;i++)
+            {
+                int indice = indicesVertices[i]-1;
+                PointReal pointReal = VerticesAtuais[indice];
+                if (pointReal.Y > maior)
+                    maior = pointReal.Y;
+            }
+            return maior;
+        }
+        private double GetYMin(Face face)
+        {
+            List<int> indicesVertices = face.IndicesVertices;
+            double menor = 9999;
+            for (int i = 0; i < indicesVertices.Count; i++)
+            {
+                int indice = indicesVertices[i]-1;
+                PointReal pointReal = VerticesAtuais[indice];
+                if (pointReal.Y < menor)
+                    menor = pointReal.Y;
+            }
+            return menor;
+        }
+        private unsafe void PreencherFaceZBuffer(Face face, Color cor, BitmapData data, int width, int height)
+        {
+            byte* src = (byte*)data.Scan0.ToPointer();
+            int yMax = (int) GetYMax(face);
+            EdgeTable[] et = new EdgeTable[yMax + 1]; //vetor de tamanho yMax, para integrar todas as linhas possíveis
+            FormarEdgeTable(et, face);
+
+            int yMin =  (int) GetYMin(face);
+            int y = yMin;
+            EdgeTable aet = new EdgeTable();
+            while (!IsVectorEdgeEmpty(et, et.Length) || aet.Count() > 0)
+            {
+                //pegar todos os elementos da posição [y]
+                if (y > -1 && y < et.Length && et[y] != null)
+                {
+                    NoEdgeTable atual = et[y].GetNoEdgeTableAt(0);
+
+                    while (atual != null)
+                    {
+                        NoEdgeTable prox = atual.prox;
+
+                        atual.prox = null;
+                        aet.Add(atual);
+
+                        atual = prox;
+                    }
+
+                    et[y] = null;
+                }
+
+                //ordenar a lista de available
+                aet.Sort();
+
+                //remover os elementos (nós) com yMax == y
+                aet.RemoveAllYMax(y);
+
+                //desenhar os pixels utilizando os pares de coordenadas da AET
+                int quant = aet.Count();
+                for (int i = 0; i < (quant / 2); i++)
+                {
+                    NoEdgeTable par1 = aet.GetNoEdgeTableAt(i * 2);
+                    NoEdgeTable par2 = aet.GetNoEdgeTableAt(i * 2 + 1);
+
+                    //pintar do (xMin par1) até (xMin par2)
+                    int limite = (int) Math.Ceiling(par2.xMin);
+                    for (int j = (int) Math.Ceiling(par1.xMin); j < limite; j++)
+                        PintaPixel(src, data.Stride, width, height, j, y, Color.Orange.R, Color.Orange.G, Color.Orange.B);
+                }
+
+                //atualizar os xMin utilizando os incrementos
+                for (int i = 0; i < aet.Count(); i++)
+                    aet.GetNoEdgeTableAt(i).Incrementar();
+
+                y++;
+            
+            }
+
         }
 
-        public static void FormarEdgeTable(EdgeTable[] et)
+        private void FormarEdgeTable(EdgeTable[] et, Face face)
         {
             //formar a et, primeira parte do algoritmo para rasterização de polígonos
-            List<Reta> arestas = p.GetArestasTransformadas();
 
-            foreach (Reta a in arestas)
+            List<Reta> arestas = face.GetArestas(VerticesAtuais);
+
+            foreach (Reta r in arestas)
             {
                 NoEdgeTable novoNo = new NoEdgeTable();
 
                 //pegar o yMax
-                novoNo.yMax = a.GetYMax();
+                novoNo.yMax = r.GetYMax();
 
                 //pegar o xMin
-                novoNo.xMin = a.GetXMin();
+                novoNo.xMin = r.GetXMin();
 
                 //calcular o incremento no novoNo
-                novoNo.CalcularIncremento(a);
+                novoNo.CalcularIncremento(r);
 
                 //setar na posição de Edge Table, onde: [yMin]
-                int yMin = a.GetYMin();
+                int yMin = r.GetYMin();
                 if (et[yMin] == null)
                 {
                     et[yMin] = new EdgeTable();
@@ -818,7 +855,7 @@ namespace ProcessamentoImagens.classes
             }
         }
 
-        public static bool IsVectorEdgeEmpty(EdgeTable[] et, int tamanho)
+        private bool IsVectorEdgeEmpty(EdgeTable[] et, int tamanho)
         {
             //verificar se o vetor de Edge Table possui algum elemento para ser verificado
             bool possuiElementos = false;
@@ -826,6 +863,17 @@ namespace ProcessamentoImagens.classes
                 if (et[i] != null)
                     possuiElementos = true;
             return !possuiElementos;
+        }
+        unsafe private static void PintaPixel(byte* src, int stride, int width, int height, int x, int y, int R, int G, int B)
+        {
+            if (x >= 0 && x < width && y >= 0 && y < height) //limitar no tamanho da imagem
+            {
+                byte* pixel;
+                pixel = src + y * stride + x * 3;
+                *(pixel++) = (byte)B;
+                *(pixel++) = (byte)G;
+                *(pixel++) = (byte)R;
+            }
         }
     }
 

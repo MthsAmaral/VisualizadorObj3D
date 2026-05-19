@@ -49,6 +49,7 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.btnZBuffer = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panelCabecalho.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -137,6 +138,7 @@
             // 
             this.panel2.BackColor = System.Drawing.SystemColors.ControlLight;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.btnZBuffer);
             this.panel2.Controls.Add(this.btnLimparProjecoes);
             this.panel2.Controls.Add(this.checkBoxEliminarFacesOcultas);
             this.panel2.Controls.Add(this.groupBox1);
@@ -307,6 +309,21 @@
             this.textBox2.Text = "Ortográfica";
             this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // btnZBuffer
+            // 
+            this.btnZBuffer.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.btnZBuffer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnZBuffer.FlatAppearance.BorderSize = 0;
+            this.btnZBuffer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnZBuffer.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnZBuffer.Location = new System.Drawing.Point(16, 169);
+            this.btnZBuffer.Name = "btnZBuffer";
+            this.btnZBuffer.Size = new System.Drawing.Size(68, 23);
+            this.btnZBuffer.TabIndex = 14;
+            this.btnZBuffer.Text = "Z-Buffer";
+            this.btnZBuffer.UseVisualStyleBackColor = false;
+            this.btnZBuffer.Click += new System.EventHandler(this.btnZBuffer_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -353,6 +370,7 @@
         private System.Windows.Forms.RadioButton rbSuperior;
         private System.Windows.Forms.CheckBox checkBoxEliminarFacesOcultas;
         private System.Windows.Forms.Button btnLimparProjecoes;
+        private System.Windows.Forms.Button btnZBuffer;
     }
 }
 

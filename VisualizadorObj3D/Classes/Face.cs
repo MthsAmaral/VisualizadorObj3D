@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProcessamentoImagens.Classes;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -7,10 +8,9 @@ namespace ProcessamentoImagens.classes
 {
     internal class Face
     {
-       
-        public List<int> IndicesVertices { get; set; } //tratar depois
-        public List<int> IndicesVerticesTextura { get; set; } //tratar depois
-        public List<int> IndicesVerticesNormais { get; set; } //tratar depois
+        public List<int> IndicesVertices { get; set; }
+        public List<int> IndicesVerticesTextura { get; set; } //tratar --> iluminação
+        public List<int> IndicesVerticesNormais { get; set; } //tratar --> iluminação
 
         public Face()
         {
@@ -18,6 +18,7 @@ namespace ProcessamentoImagens.classes
             IndicesVerticesTextura = new List<int>();
             IndicesVerticesNormais = new List<int>();
         }
+
 
         //public Reta GetArestaAt(int pos)
         //{
@@ -76,31 +77,48 @@ namespace ProcessamentoImagens.classes
         //    List<Reta> arestasTransformadas = GetArestasTransformadas();
         //    while(i<arestasTransformadas.Count && (p.X != arestasTransformadas[i].GetIniX() || p.Y != arestasTransformadas[i].GetIniY()))
         //        i++;
-                
+
         //    if(i<arestasTransformadas.Count && p.X == arestasTransformadas[i].GetIniX() && p.Y == arestasTransformadas[i].GetIniY())
         //        return i;
         //    return -1;
         //}
 
-        //public List<Reta> GetArestasTransformadas()
-        //{
-        //    List<Reta> arestasTransformadas = new List<Reta>();
-        //    List<Point> novosVertices = GetVerticesModificados();
-        //    Point vertice1, vertice2;
+        public List<Reta> GetArestas(List<PointReal> verticesAtuais)
+        {
+            List<Reta> arestas = new List<Reta>();
+            PointInteiro vertice1, vertice2;
+            List<PointInteiro> novosVertices = GetVerticesDaFace(verticesAtuais);
 
-        //    //ajustar os vértices das novas arestas
-        //    vertice1 = novosVertices[0];
-        //    for (int i = 1; i < novosVertices.Count; i++)
-        //    {
-        //        vertice2 = novosVertices[i];
-        //        arestasTransformadas.Add(new Reta(vertice1, vertice2));
-        //        vertice1 = vertice2;
-        //    }
-        //    vertice2 = novosVertices[0];
-        //    arestasTransformadas.Add(new Reta(vertice1, vertice2)); //última aresta de fechamento
+            //ajustar os vértices das novas arestas
+            vertice1 = novosVertices[0];
+            for (int i = 1; i < novosVertices.Count; i++)
+            {
+                vertice2 = novosVertices[i];
+                arestas.Add(new Reta(vertice1, vertice2));
+                vertice1 = vertice2;
+            }
+            vertice2 = novosVertices[0];
+            arestas.Add(new Reta(vertice1, vertice2)); //última aresta de fechamento
 
-        //    return arestasTransformadas;
-        //}
+            return arestas;
+        }
+
+        private List<PointInteiro> GetVerticesDaFace(List<PointReal> verticesAtuais)
+        {
+            List<PointInteiro> vertices = new List<PointInteiro>();
+            foreach(int i in IndicesVertices)
+            {
+                PointReal point = verticesAtuais[i-1];
+                PointInteiro p = new PointInteiro();
+                p.X = (int) point.X;
+                p.Y = (int) point.Y;
+                p.Z = (int) point.Z;
+                vertices.Add(p);
+            }
+                
+
+            return vertices;
+        }
 
         //// Retorno dos vértices do meu polígono
         //public List<Point> GetVerticesOriginais()
