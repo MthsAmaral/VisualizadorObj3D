@@ -29,6 +29,10 @@ namespace VisualizadorObj3D
         public static char c = ' ';
 
 
+        private Timer timerRender;
+        private bool precisaRedesenhar = false;
+
+        private Color corZBuffer = Color.White;
 
         public Form1()
         {
@@ -39,6 +43,12 @@ namespace VisualizadorObj3D
             pictureBox1.MouseEnter += (s, e) => pictureBox1.Focus();
             // Registra o evento MouseWheel manualmente
             pictureBox1.MouseWheel += pictureBox1_MouseWheel;
+
+
+            timerRender = new Timer();
+            timerRender.Interval = 30; // Aproximadamente 30 FPS
+            timerRender.Tick += TimerRender_Tick;
+            timerRender.Start();
         }
 
 
@@ -88,6 +98,8 @@ namespace VisualizadorObj3D
                 arrastando = false;
                 rotacionando = false;
 
+                checkBoxZBuffer.Checked = false;
+
                 // restaura a matriz acumulada para identidade
                 obj3d.ResetarMatrizAcumulada();
 
@@ -121,7 +133,7 @@ namespace VisualizadorObj3D
                     }
                 }
 
-                Redesenhar();
+                precisaRedesenhar = true;
             }
         }
 
@@ -163,7 +175,7 @@ namespace VisualizadorObj3D
                     translacaoY += deltaY;
 
                     ultimaPosicaoObj = e.Location;
-                   
+                    precisaRedesenhar = true;
                 }
                 else if(rotacionando)
                 {
@@ -176,9 +188,9 @@ namespace VisualizadorObj3D
                     rotacaoX += deltaY * 0.5;
 
                     ultimaPosicaoObj = e.Location;
-                    
+                    precisaRedesenhar = true;
                 }
-                Redesenhar();
+                
             }
             
         }
@@ -187,13 +199,13 @@ namespace VisualizadorObj3D
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Left)
-            {
                 arrastando = false;
-            }
             else if(e.Button == MouseButtons.Right)
-            {
                 rotacionando = false;
-            }
+
+            if(obj3d != null)
+                precisaRedesenhar = true;
+
         }
 
         private void Redesenhar()
@@ -210,7 +222,14 @@ namespace VisualizadorObj3D
             obj3d.MultiplicaMatrizEscala(escala, escala, escala);
 
             Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c, eliminarFacesOcultas);
-            pictureBox1.Image = imagem;
+            
+            if(checkBoxZBuffer.Checked)
+            {
+                obj3d.PreencherObjeto3D(corZBuffer);
+                pictureBox1.Image = obj3d.bitmap;
+            }
+            else
+                pictureBox1.Image = imagem;
         }
 
 
@@ -270,6 +289,7 @@ namespace VisualizadorObj3D
                 rbCabinete.Checked = false;
                 rb1Ponto.Checked = false;
                 checkBoxEliminarFacesOcultas.Checked = false;
+                checkBoxZBuffer.Checked = false;
 
 
                 ehProjecao = false;
@@ -287,15 +307,45 @@ namespace VisualizadorObj3D
 
         //====================================================================================================================================================
         // ======= Z-Buffer =======
-        private void btnZBuffer_Click(object sender, EventArgs e)
+        private void checkBoxZBuffer_CheckedChanged(object sender, EventArgs e)
         {
-            obj3d.PreencherObjeto3D(Color.Red);
-            pictureBox1.Image = obj3d.bitmap;
+            if (obj3d != null)
+                Redesenhar();
         }
 
+        private void TimerRender_Tick(object sender, EventArgs e)
+        {
+            if (precisaRedesenhar && obj3d != null)
+            {
+                precisaRedesenhar = false;
+                Redesenhar();
+            }
+        }
+
+        private void btnEscolherCorZBuffer_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            colorDialog.AllowFullOpen = true;
+            colorDialog.AnyColor = true;
+            colorDialog.Color = corZBuffer;
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                corZBuffer = colorDialog.Color;
+                btnEscolherCorZBuffer.BackColor = corZBuffer;
+
+                // Ajusta a cor do texto para legibilidade
+                double brilho = (corZBuffer.R * 0.299) + (corZBuffer.G * 0.587) + (corZBuffer.B * 0.114);
+                if (brilho < 186)
+                    btnEscolherCorZBuffer.ForeColor = Color.White;
+                else
+                    btnEscolherCorZBuffer.ForeColor = Color.Black;
 
 
 
-
+                if (obj3d != null && checkBoxZBuffer.Checked)
+                    Redesenhar();
+            }
+        }
     }
 }
