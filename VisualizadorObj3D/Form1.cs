@@ -28,7 +28,6 @@ namespace VisualizadorObj3D
         //Projecao Ortografica
         public static char c = ' ';
 
-
         private Timer timerRender;
         private bool precisaRedesenhar = false;
 
@@ -46,7 +45,7 @@ namespace VisualizadorObj3D
 
 
             timerRender = new Timer();
-            timerRender.Interval = 30; // Aproximadamente 30 FPS
+            timerRender.Interval = 1; // Aproximadamente 30 FPS
             timerRender.Tick += TimerRender_Tick;
             timerRender.Start();
         }
@@ -132,7 +131,6 @@ namespace VisualizadorObj3D
                         escala = 0.1;
                     }
                 }
-
                 precisaRedesenhar = true;
             }
         }
@@ -215,14 +213,16 @@ namespace VisualizadorObj3D
 
             // primeiro translação, depois rotação e por último escala
             obj3d.MultiplicaMatrizTranslacao(translacaoX, -translacaoY, 0);
-            
+         
             obj3d.MultiplicaMatrizRotacao((int)rotacaoX, 'x');
             obj3d.MultiplicaMatrizRotacao((int)rotacaoY, 'y');
             
+            
             obj3d.MultiplicaMatrizEscala(escala, escala, escala);
+            
 
             Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c, eliminarFacesOcultas);
-            
+           
             if(checkBoxZBuffer.Checked)
             {
                 obj3d.PreencherObjeto3D(corZBuffer);
@@ -346,6 +346,66 @@ namespace VisualizadorObj3D
                 if (obj3d != null && checkBoxZBuffer.Checked)
                     Redesenhar();
             }
+        }
+
+        private void trackBarLuzX_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBarLuzY_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBarLuzZ_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBarKa_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBarKd_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBarKs_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBarN_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonEscolherCorLuz_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBoxLuz_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonAplicarLuz_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonLimparLuz_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cbAlgortimo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

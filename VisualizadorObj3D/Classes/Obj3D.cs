@@ -22,6 +22,7 @@ namespace ProcessamentoImagens.classes
         private double[,] ZBuffer { get; set; }
         private Color[,] FrameBuffer { get; set; }
 
+        private List<PointReal> VerticesTela { get; set; }
         public Bitmap bitmap { get; set; }
 
         public Obj3D()
@@ -391,12 +392,6 @@ namespace ProcessamentoImagens.classes
         }
 
 
-
-
-
-
-
-
         // ====================================================================================================================================================
         // ========  Z-Buffer =========
 
@@ -409,6 +404,14 @@ namespace ProcessamentoImagens.classes
             InicializarBuffers(width, height);
 
             List<Face> facesVisiveis = GetFacesVisiveis();
+
+            VerticesTela = new List<PointReal>();
+
+            foreach (PointReal p in VerticesProjetados)
+            {
+                VerticesTela.Add(ConverterParaTela(p, bitmap.Width,bitmap.Height) );
+            }
+
             for (int i = 0; i < facesVisiveis.Count; i++)
             {
                 PreencherFaceZBuffer(facesVisiveis[i], cor, width, height);
@@ -575,10 +578,9 @@ namespace ProcessamentoImagens.classes
             int i1 = face.IndicesVertices[0] - 1;
             int i2 = face.IndicesVertices[1] - 1;
             int i3 = face.IndicesVertices[2] - 1;
-
-            PointReal p1Tela = ConverterParaTela(VerticesProjetados[i1], bitmap.Width, bitmap.Height);
-            PointReal p2Tela = ConverterParaTela(VerticesProjetados[i2], bitmap.Width, bitmap.Height);
-            PointReal p3Tela = ConverterParaTela(VerticesProjetados[i3], bitmap.Width, bitmap.Height);
+            PointReal p1Tela = VerticesTela[i1];
+            PointReal p2Tela = VerticesTela[i2];
+            PointReal p3Tela = VerticesTela[i3];
 
             double z1 = VerticesProjetados[i1].Z;
             double z2 = VerticesProjetados[i2].Z;
@@ -602,20 +604,11 @@ namespace ProcessamentoImagens.classes
         }
 
 
-
-
         private void FormarEdgeTable(EdgeTable[] et, Face face)
         {
             //formar a et, primeira parte do algoritmo para rasterização de polígonos
 
-            List<PointReal> verticesTela = new List<PointReal>();
-
-            foreach (PointReal p in VerticesProjetados)
-            {
-                verticesTela.Add(ConverterParaTela(p, bitmap.Width, bitmap.Height));
-            }
-
-            List<Reta> arestas = face.GetArestas(verticesTela);
+            List<Reta> arestas = face.GetArestas(VerticesTela);
 
             foreach (Reta r in arestas)
             {
@@ -660,7 +653,7 @@ namespace ProcessamentoImagens.classes
             foreach (int indiceVertice in face.IndicesVertices)
             {
                 int indice = indiceVertice - 1;
-                PointReal pTela = ConverterParaTela(VerticesProjetados[indice], bitmap.Width, bitmap.Height);
+                PointReal pTela = VerticesTela[indice];
 
                 if (pTela.Y > maior)
                     maior = pTela.Y;
@@ -673,21 +666,13 @@ namespace ProcessamentoImagens.classes
             foreach (int indiceVertice in face.IndicesVertices)
             {
                 int indice = indiceVertice - 1;
-                PointReal pTela = ConverterParaTela(VerticesProjetados[indice], bitmap.Width, bitmap.Height);
+                PointReal pTela = VerticesTela[indice];
 
                 if (pTela.Y < menor)
                     menor = pTela.Y;
             }
             return menor;
         }
-
-
-
-
-
-
-
-
 
 
         //====================================================================================================================================================

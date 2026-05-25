@@ -12,6 +12,11 @@ namespace ProcessamentoImagens.classes
         public List<int> IndicesVerticesTextura { get; set; } //tratar --> iluminação
         public List<int> IndicesVerticesNormais { get; set; } //tratar --> iluminação
 
+        private PointReal VetorNormal { get; set; }
+        private PointReal VetorE { get; set; }
+        private PointReal VetorL { get; set; }
+        private PointReal VetorH { get; set; }
+        private PointReal N {  get; set; }
         public Face()
         {
             IndicesVertices = new List<int>();
@@ -19,6 +24,63 @@ namespace ProcessamentoImagens.classes
             IndicesVerticesNormais = new List<int>();
         }
 
+        public void CalcularVetorNormal(List<PointReal> vertices)
+        {
+            PointReal vA = vertices[0];
+            PointReal vB = vertices[1];
+            PointReal vC = vertices[2];
+            PointReal vAB = CalcularSubtracaoVetor(vB, vA);
+            PointReal vAC = CalcularSubtracaoVetor(vC, vA);
+            N = CalcularProdutoEscalar(vAB, vAC);
+            double moduloN = CalcularVetorModulo(N);
+            N = CalcularDivisaoModulo(N, moduloN);
+        }
+        private PointReal CalcularDivisaoModulo(PointReal v1, double modulo)
+        {
+            return new PointReal(v1.X / modulo, v1.Y / modulo, v1.Z / modulo);
+        }
+        private double CalcularVetorModulo(PointReal v1)
+        {
+            return Math.Sqrt(Math.Pow(v1.X, 2) + Math.Pow(v1.Y, 2) + Math.Pow(v1.Z, 2));
+        }
+        private PointReal CalcularProdutoEscalar(PointReal v1, PointReal v2)
+        {
+            double i1, i2, j1, j2, k1, k2;
+            i1 = v1.Y * v2.Z;
+            j1 = v1.Z * v2.X;
+            k1 = v1.X * v2.Y;
+            i2 = v1.Z * v2.Y;
+            j2 = v1.X * v2.Z;
+            k2 = v1.Y * v2.X;
+
+            return new PointReal(i1 - i2, j1 - j2, k1 -k2);
+
+
+        }
+        private PointReal CalcularSubtracaoVetor(PointReal v1, PointReal v2)
+        {
+            return new PointReal(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z);
+        }
+        private PointReal CalcularAdicaoVetor(PointReal v1, PointReal v2)
+        {
+            return new PointReal(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
+        }
+        public void CalcularVetorE(PointReal PontoObs)
+        {
+            VetorE = CalcularDivisaoModulo(PontoObs, CalcularVetorModulo(PontoObs));
+        }
+        public void CalcularVetorL(PointReal PontoLuz)
+        {
+            VetorL = CalcularDivisaoModulo(PontoLuz, CalcularVetorModulo(PontoLuz));
+        }
+        public void CalcularVetorH()
+        {
+            PointReal vELAdicao = CalcularAdicaoVetor(VetorL, VetorE);
+            double modulovEL = CalcularVetorModulo(vELAdicao);
+
+
+            VetorH = CalcularDivisaoModulo(vELAdicao, modulovEL);
+        }
 
         //public Reta GetArestaAt(int pos)
         //{
