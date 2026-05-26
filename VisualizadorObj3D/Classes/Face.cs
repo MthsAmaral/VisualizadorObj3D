@@ -3,20 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
+using VisualizadorObj3D.Classes;
 
 namespace ProcessamentoImagens.classes
 {
-    internal class Face
+    public class Face
     {
         public List<int> IndicesVertices { get; set; }
         public List<int> IndicesVerticesTextura { get; set; } //tratar --> iluminação
         public List<int> IndicesVerticesNormais { get; set; } //tratar --> iluminação
 
-        private PointReal VetorNormal { get; set; }
-        private PointReal VetorE { get; set; }
-        private PointReal VetorL { get; set; }
-        private PointReal VetorH { get; set; }
-        private PointReal N {  get; set; }
+        public PointReal VetorN { get; set; }
+        public PointReal VetorE { get; set; }
+        public PointReal VetorL { get; set; }
+        public PointReal VetorH { get; set; }
+        
         public Face()
         {
             IndicesVertices = new List<int>();
@@ -31,9 +32,10 @@ namespace ProcessamentoImagens.classes
             PointReal vC = vertices[2];
             PointReal vAB = CalcularSubtracaoVetor(vB, vA);
             PointReal vAC = CalcularSubtracaoVetor(vC, vA);
-            N = CalcularProdutoEscalar(vAB, vAC);
-            double moduloN = CalcularVetorModulo(N);
-            N = CalcularDivisaoModulo(N, moduloN);
+            VetorN = CalcularProdutoVetorial(vAB, vAC);
+            double moduloN = CalcularVetorModulo(VetorN);
+            if (moduloN != 0)
+                VetorN = CalcularDivisaoModulo(VetorN, moduloN);
         }
         private PointReal CalcularDivisaoModulo(PointReal v1, double modulo)
         {
@@ -43,7 +45,7 @@ namespace ProcessamentoImagens.classes
         {
             return Math.Sqrt(Math.Pow(v1.X, 2) + Math.Pow(v1.Y, 2) + Math.Pow(v1.Z, 2));
         }
-        private PointReal CalcularProdutoEscalar(PointReal v1, PointReal v2)
+        private PointReal CalcularProdutoVetorial(PointReal v1, PointReal v2)
         {
             double i1, i2, j1, j2, k1, k2;
             i1 = v1.Y * v2.Z;
@@ -54,8 +56,10 @@ namespace ProcessamentoImagens.classes
             k2 = v1.Y * v2.X;
 
             return new PointReal(i1 - i2, j1 - j2, k1 -k2);
-
-
+        }
+        private double CalcularProdutoEscalar(PointReal v1, PointReal v2)
+        {
+            return (v1.X * v2.X) + (v1.Y * v2.Y) + (v1.Z * v2.Z);
         }
         private PointReal CalcularSubtracaoVetor(PointReal v1, PointReal v2)
         {
@@ -65,21 +69,171 @@ namespace ProcessamentoImagens.classes
         {
             return new PointReal(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
         }
-        public void CalcularVetorE(PointReal PontoObs)
+        public void CalcularVetorE()
         {
-            VetorE = CalcularDivisaoModulo(PontoObs, CalcularVetorModulo(PontoObs));
+            VetorE = new PointReal(0, 0, -1);
         }
-        public void CalcularVetorL(PointReal PontoLuz)
+
+        public void CalcularVetorL(PointReal pontoLuz)
         {
-            VetorL = CalcularDivisaoModulo(PontoLuz, CalcularVetorModulo(PontoLuz));
+            double moduloL = CalcularVetorModulo(pontoLuz);
+
+          
+            if (moduloL != 0)
+                VetorL = CalcularDivisaoModulo(pontoLuz, moduloL);
+            else
+                VetorL = new PointReal(0, 0, 1); 
         }
         public void CalcularVetorH()
         {
             PointReal vELAdicao = CalcularAdicaoVetor(VetorL, VetorE);
-            double modulovEL = CalcularVetorModulo(vELAdicao);
+            double moduloH = CalcularVetorModulo(vELAdicao);
 
+            if (moduloH != 0)
+                VetorH = CalcularDivisaoModulo(vELAdicao, moduloH);
+            else
+                VetorH = new PointReal(0, 0, 1);
+        }
 
-            VetorH = CalcularDivisaoModulo(vELAdicao, modulovEL);
+        public double CalcularDifusa()
+        {
+            return VetorL.X * VetorN.X + VetorL.Y * VetorN.Y + VetorL.Z * VetorN.Z;
+        }
+        public double CalcularEspecular(int nEspecular)
+        {
+            return Math.Pow(VetorH.X * VetorN.X + VetorH.Y * VetorN.Y + VetorH.Z * VetorN.Z, nEspecular);
+        }
+        public Color CalcularCorIluminacao(Color corLuz, Color corObjeto, double ka, double kd, double ks, int nEspecular, string componente)
+        {
+            // Superficie
+           // k_a: ka * Cor Objeto * Cor Luz
+           // k_d: kd * Cor Objeto * Cor Luz * <L, N>
+           // k_e:  ks * Cor Luz * <H, N> elevado n 
+            double corObjetoNormalR = corObjeto.R / 255.0;
+            double corObjetoNormalG = corObjeto.G / 255.0;
+            double corObjetoNormalB = corObjeto.B / 255.0;
+
+            double corLuzNormalR = corLuz.R / 255.0;
+            double corLuzNormalG = corLuz.G / 255.0;
+            double corLuzNormalB = corLuz.B / 255.0;
+
+            double k_aR = ka * corObjetoNormalR * corLuzNormalR;
+            double k_aG = ka * corObjetoNormalG * corLuzNormalG;
+            double k_aB = ka * corObjetoNormalB * corLuzNormalB;
+     
+            double produtoEscalarLN = Math.Max(0,CalcularProdutoEscalar(VetorL, VetorN));
+            double k_dR = kd * corObjetoNormalR * corLuzNormalR * produtoEscalarLN;
+            double k_dG = kd * corObjetoNormalG * corLuzNormalG * produtoEscalarLN;
+            double k_dB = kd * corObjetoNormalB * corLuzNormalB * produtoEscalarLN;
+
+            double produtoEscalarHN = Math.Max(0,CalcularProdutoEscalar(VetorH, VetorN));
+            double especular = Math.Pow(produtoEscalarHN, nEspecular);
+            double k_sR = ks * corLuzNormalR * especular;
+            double k_sG = ks * corLuzNormalG * especular;
+            double k_sB = ks * corLuzNormalB * especular;
+
+            double somaR, somaG, somaB;
+            if (componente.Equals("ambiente"))
+            {
+                somaR = k_aR;
+                somaG = k_aG;
+                somaB = k_aB;
+            }
+            else
+            if (componente.Equals("difusa"))
+            {
+                somaR = k_dR;
+                somaG = k_dG;
+                somaB = k_dB;
+            }
+            else
+            if (componente.Equals("especular"))
+            {
+                somaR = k_sR;
+                somaG = k_sG;
+                somaB = k_sB;
+            }
+            else // total
+            {
+                somaR = k_aR + k_dR + k_sR;
+                somaG = k_aG + k_dG + k_sG;
+                somaB = k_aB + k_dB + k_sB;   
+            }
+            
+            int finalR = LimitarCor(somaR * 255.0);
+            int finalG = LimitarCor(somaG * 255.0);
+            int finalB = LimitarCor(somaB * 255.0);
+
+            return Color.FromArgb(finalR, finalG, finalB);
+        }
+        private int LimitarCor(double valor)
+        {
+           
+            if (valor > 255.0)
+                return 255;
+
+            if (valor < 0.0)
+                return 0;
+
+            return (int)valor;
+        }
+        //================== MÉTODOS UTILIZADOS NO ELIMINAR FACES OCULTAS =========================
+        public bool EhVisivel(Face face, char tipoProjecao, List<PointReal> verticesAtuais)
+        {
+            if (face.IndicesVertices.Count < 3)
+                return false;
+
+            PointReal normal = CalcularNormalFace(face, verticesAtuais);
+
+            int i = face.IndicesVertices[0] - 1;
+            PointReal pontoFace = verticesAtuais[i];
+
+            PointReal oa = Projecao.ObterVetorObservacao(pontoFace, tipoProjecao);
+
+            double produtoEscalar = oa.X * normal.X +
+                                    oa.Y * normal.Y +
+                                    oa.Z * normal.Z;
+
+            // Pelo material:
+            // positivo = traseira (não visível)
+            // negativo = frontal (visível)
+            // zero = lateral (não visível)
+            return produtoEscalar < 0;
+        }
+        private PointReal CalcularNormalFace(Face face, List<PointReal> verticesAtuais)
+        {
+            if (face.IndicesVertices.Count < 3)
+            {
+                return new PointReal(0, 0, 0);
+            }
+
+            int i1 = face.IndicesVertices[0] - 1;
+            int i2 = face.IndicesVertices[1] - 1;
+            int i3 = face.IndicesVertices[2] - 1;
+
+            PointReal p1 = verticesAtuais[i1];
+            PointReal p2 = verticesAtuais[i2];
+            PointReal p3 = verticesAtuais[i3];
+
+            PointReal vet1 = new PointReal(
+                p2.X - p1.X,
+                p2.Y - p1.Y,
+                p2.Z - p1.Z
+            );
+
+            PointReal vet2 = new PointReal(
+                p3.X - p1.X,
+                p3.Y - p1.Y,
+                p3.Z - p1.Z
+            );
+
+            PointReal normal = new PointReal(
+                vet1.Y * vet2.Z - vet1.Z * vet2.Y,
+                vet1.Z * vet2.X - vet1.X * vet2.Z,
+                vet1.X * vet2.Y - vet1.Y * vet2.X
+            );
+
+            return normal;
         }
 
         //public Reta GetArestaAt(int pos)
@@ -203,5 +357,30 @@ namespace ProcessamentoImagens.classes
 
         //    return novosVertices;
         //}
+
+        public List<PointReal> GetVertices(List<PointReal> VerticesObj3D)
+        {
+            List<PointReal> verticesFace = new List<PointReal>();
+            for(int i = 0; i<IndicesVertices.Count; i++)
+            {
+                verticesFace.Add(VerticesObj3D[IndicesVertices[i] - 1]);
+            }
+            return verticesFace;
+        }
+
+        public PointReal CalcularCentroide(List<PointReal> vertices)
+        {
+            double x = 0, y = 0, z = 0;
+
+            foreach (var v in vertices)
+            {
+                x += v.X;
+                y += v.Y;
+                z += v.Z;
+            }
+
+            int n = vertices.Count;
+            return new PointReal(x / n, y / n, z / n);
+        }
     }
 }

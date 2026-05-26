@@ -3,7 +3,7 @@ using ProcessamentoImagens.Classes;
 
 namespace ProcessamentoImagens.classes
 {
-    internal class Reta
+    public class Reta
     {
         // Reta adaptada para 3D
         private PointInteiro Ini { get; set; }
@@ -62,7 +62,30 @@ namespace ProcessamentoImagens.classes
         {
             return Fim.Z;
         }
-
+        public int GetIniR()
+        {
+            return Ini.R;
+        }
+        public int GetIniG()
+        {
+            return Ini.G;
+        }
+        public int GetIniB()
+        {
+            return Ini.B;
+        }
+        public int GetFimR()
+        {
+            return Fim.R;
+        }
+        public int GetFimG()
+        {
+            return Fim.G;
+        }
+        public int GetFimB()
+        {
+            return Fim.B;
+        }
         //usado para pintar o polígono
         public int GetYMin()
         {
@@ -162,6 +185,63 @@ namespace ProcessamentoImagens.classes
 
             // vem nesse return se os dois pontos são exatamente iguais
             return Ini.Z;
+        }
+        public int GetRMin()
+        {
+            //primeiro preciso descobrir qual dos Y é maior
+            if (Ini.Y < Fim.Y)
+                return Ini.R;
+
+            if (Fim.Y < Ini.Y)
+                return Fim.R;
+
+            //passa os dois if's anteriores se os y's forem iguais -> na mesma linha
+            if (Ini.R < Fim.R)
+                return Ini.R;
+
+            if (Fim.R < Ini.R)
+                return Fim.R;
+
+            // vem nesse return se os dois pontos são exatamente iguais
+            return Ini.R;
+        }
+        public int GetGMin()
+        {
+            //primeiro preciso descobrir qual dos Y é maior
+            if (Ini.Y < Fim.Y)
+                return Ini.G;
+
+            if (Fim.Y < Ini.Y)
+                return Fim.G;
+
+            //passa os dois if's anteriores se os y's forem iguais -> na mesma linha
+            if (Ini.G < Fim.G)
+                return Ini.G;
+
+            if (Fim.G < Ini.G)
+                return Fim.G;
+
+            // vem nesse return se os dois pontos são exatamente iguais
+            return Ini.G;
+        }
+        public int GetBMin()
+        {
+            //primeiro preciso descobrir qual dos Y é maior
+            if (Ini.Y < Fim.Y)
+                return Ini.B;
+
+            if (Fim.Y < Ini.Y)
+                return Fim.B;
+
+            //passa os dois if's anteriores se os y's forem iguais -> na mesma linha
+            if (Ini.B < Fim.B)
+                return Ini.B;
+
+            if (Fim.B < Ini.B)
+                return Fim.B;
+
+            // vem nesse return se os dois pontos são exatamente iguais
+            return Ini.B;
         }
     }
     

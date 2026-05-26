@@ -35,8 +35,37 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.checkBoxZBuffer = new System.Windows.Forms.CheckBox();
-            this.btnEscolherCorZBuffer = new System.Windows.Forms.Button();
+            this.lbKa2 = new System.Windows.Forms.Label();
+            this.lbKd2 = new System.Windows.Forms.Label();
+            this.lbKs2 = new System.Windows.Forms.Label();
+            this.lbN2 = new System.Windows.Forms.Label();
+            this.lbLuzZ = new System.Windows.Forms.Label();
+            this.lbLuzY = new System.Windows.Forms.Label();
+            this.lbLuzX = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.lbN = new System.Windows.Forms.Label();
+            this.cbAlgortimo = new System.Windows.Forms.ComboBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.rbDifusa = new System.Windows.Forms.RadioButton();
+            this.rbAmbiente = new System.Windows.Forms.RadioButton();
+            this.rbTotal = new System.Windows.Forms.RadioButton();
+            this.rbEspecular = new System.Windows.Forms.RadioButton();
+            this.checkBoxLuz = new System.Windows.Forms.CheckBox();
+            this.buttonEscolherCorLuz = new System.Windows.Forms.Button();
+            this.trackBarN = new System.Windows.Forms.TrackBar();
+            this.lbKs = new System.Windows.Forms.Label();
+            this.lbKd = new System.Windows.Forms.Label();
+            this.lbKa = new System.Windows.Forms.Label();
+            this.trackBarKs = new System.Windows.Forms.TrackBar();
+            this.trackBarKd = new System.Windows.Forms.TrackBar();
+            this.trackBarKa = new System.Windows.Forms.TrackBar();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.trackBarLuzZ = new System.Windows.Forms.TrackBar();
+            this.trackBarLuzY = new System.Windows.Forms.TrackBar();
+            this.trackBarLuzX = new System.Windows.Forms.TrackBar();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.btnLimparProjecoes = new System.Windows.Forms.Button();
@@ -52,45 +81,23 @@
             this.btAplicar = new System.Windows.Forms.Button();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.checkBoxZBuffer = new System.Windows.Forms.CheckBox();
+            this.btnEscolherCorZBuffer = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.trackBarLuzX = new System.Windows.Forms.TrackBar();
-            this.trackBarLuzY = new System.Windows.Forms.TrackBar();
-            this.trackBarLuzZ = new System.Windows.Forms.TrackBar();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.trackBarKs = new System.Windows.Forms.TrackBar();
-            this.trackBarKd = new System.Windows.Forms.TrackBar();
-            this.trackBarKa = new System.Windows.Forms.TrackBar();
-            this.label7 = new System.Windows.Forms.Label();
-            this.trackBarN = new System.Windows.Forms.TrackBar();
-            this.checkBoxLuz = new System.Windows.Forms.CheckBox();
-            this.buttonEscolherCorLuz = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.rbDifusa = new System.Windows.Forms.RadioButton();
-            this.rbAmbiente = new System.Windows.Forms.RadioButton();
-            this.rbTotal = new System.Windows.Forms.RadioButton();
-            this.rbEspecular = new System.Windows.Forms.RadioButton();
-            this.buttonAplicarLuz = new System.Windows.Forms.Button();
-            this.buttonLimparLuz = new System.Windows.Forms.Button();
-            this.cbAlgortimo = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panelCabecalho.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
-            this.panel2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzX)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzY)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzZ)).BeginInit();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarN)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarKs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarKd)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarKa)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarN)).BeginInit();
-            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzZ)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzX)).BeginInit();
+            this.panel2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -157,7 +164,7 @@
             this.panel1.Controls.Add(this.panel2);
             this.panel1.Location = new System.Drawing.Point(743, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(398, 655);
+            this.panel1.Size = new System.Drawing.Size(411, 655);
             this.panel1.TabIndex = 3;
             // 
             // textBox5
@@ -169,24 +176,31 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(194, 25);
             this.textBox5.TabIndex = 15;
-            this.textBox5.Text = "Iluminação e Sombreamento";
+            this.textBox5.Text = "Iluminação e Tonalização";
             this.textBox5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.SystemColors.ControlLight;
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel3.Controls.Add(this.lbKa2);
+            this.panel3.Controls.Add(this.lbKd2);
+            this.panel3.Controls.Add(this.lbKs2);
+            this.panel3.Controls.Add(this.lbN2);
+            this.panel3.Controls.Add(this.lbLuzZ);
+            this.panel3.Controls.Add(this.lbLuzY);
+            this.panel3.Controls.Add(this.lbLuzX);
+            this.panel3.Controls.Add(this.label9);
+            this.panel3.Controls.Add(this.label8);
+            this.panel3.Controls.Add(this.lbN);
             this.panel3.Controls.Add(this.cbAlgortimo);
-            this.panel3.Controls.Add(this.buttonLimparLuz);
-            this.panel3.Controls.Add(this.buttonAplicarLuz);
             this.panel3.Controls.Add(this.groupBox2);
             this.panel3.Controls.Add(this.checkBoxLuz);
             this.panel3.Controls.Add(this.buttonEscolherCorLuz);
-            this.panel3.Controls.Add(this.label7);
             this.panel3.Controls.Add(this.trackBarN);
-            this.panel3.Controls.Add(this.label4);
-            this.panel3.Controls.Add(this.label5);
-            this.panel3.Controls.Add(this.label6);
+            this.panel3.Controls.Add(this.lbKs);
+            this.panel3.Controls.Add(this.lbKd);
+            this.panel3.Controls.Add(this.lbKa);
             this.panel3.Controls.Add(this.trackBarKs);
             this.panel3.Controls.Add(this.trackBarKd);
             this.panel3.Controls.Add(this.trackBarKa);
@@ -198,34 +212,340 @@
             this.panel3.Controls.Add(this.trackBarLuzX);
             this.panel3.Location = new System.Drawing.Point(17, 287);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(367, 356);
+            this.panel3.Size = new System.Drawing.Size(375, 356);
             this.panel3.TabIndex = 14;
             // 
-            // checkBoxZBuffer
+            // lbKa2
             // 
-            this.checkBoxZBuffer.AutoSize = true;
-            this.checkBoxZBuffer.Location = new System.Drawing.Point(16, 175);
-            this.checkBoxZBuffer.Name = "checkBoxZBuffer";
-            this.checkBoxZBuffer.Size = new System.Drawing.Size(64, 17);
-            this.checkBoxZBuffer.TabIndex = 14;
-            this.checkBoxZBuffer.Text = "Z-Buffer";
-            this.checkBoxZBuffer.UseVisualStyleBackColor = true;
-            this.checkBoxZBuffer.CheckedChanged += new System.EventHandler(this.checkBoxZBuffer_CheckedChanged);
+            this.lbKa2.AutoSize = true;
+            this.lbKa2.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.lbKa2.Location = new System.Drawing.Point(337, 3);
+            this.lbKa2.Name = "lbKa2";
+            this.lbKa2.Size = new System.Drawing.Size(28, 13);
+            this.lbKa2.TabIndex = 43;
+            this.lbKa2.Text = "10.0";
             // 
-            // btnEscolherCorZBuffer
+            // lbKd2
             // 
-            this.btnEscolherCorZBuffer.BackColor = System.Drawing.SystemColors.Window;
-            this.btnEscolherCorZBuffer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.btnEscolherCorZBuffer.FlatAppearance.BorderSize = 0;
-            this.btnEscolherCorZBuffer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnEscolherCorZBuffer.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnEscolherCorZBuffer.Location = new System.Drawing.Point(87, 171);
-            this.btnEscolherCorZBuffer.Name = "btnEscolherCorZBuffer";
-            this.btnEscolherCorZBuffer.Size = new System.Drawing.Size(84, 23);
-            this.btnEscolherCorZBuffer.TabIndex = 15;
-            this.btnEscolherCorZBuffer.Text = "Escolher Cor";
-            this.btnEscolherCorZBuffer.UseVisualStyleBackColor = false;
-            this.btnEscolherCorZBuffer.Click += new System.EventHandler(this.btnEscolherCorZBuffer_Click);
+            this.lbKd2.AutoSize = true;
+            this.lbKd2.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.lbKd2.Location = new System.Drawing.Point(337, 54);
+            this.lbKd2.Name = "lbKd2";
+            this.lbKd2.Size = new System.Drawing.Size(28, 13);
+            this.lbKd2.TabIndex = 42;
+            this.lbKd2.Text = "10.0";
+            // 
+            // lbKs2
+            // 
+            this.lbKs2.AutoSize = true;
+            this.lbKs2.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.lbKs2.Location = new System.Drawing.Point(337, 113);
+            this.lbKs2.Name = "lbKs2";
+            this.lbKs2.Size = new System.Drawing.Size(28, 13);
+            this.lbKs2.TabIndex = 41;
+            this.lbKs2.Text = "10.0";
+            // 
+            // lbN2
+            // 
+            this.lbN2.AutoSize = true;
+            this.lbN2.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.lbN2.Location = new System.Drawing.Point(337, 161);
+            this.lbN2.Name = "lbN2";
+            this.lbN2.Size = new System.Drawing.Size(28, 13);
+            this.lbN2.TabIndex = 40;
+            this.lbN2.Text = "10.0";
+            // 
+            // lbLuzZ
+            // 
+            this.lbLuzZ.AutoSize = true;
+            this.lbLuzZ.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.lbLuzZ.Location = new System.Drawing.Point(121, 129);
+            this.lbLuzZ.Name = "lbLuzZ";
+            this.lbLuzZ.Size = new System.Drawing.Size(28, 13);
+            this.lbLuzZ.TabIndex = 39;
+            this.lbLuzZ.Text = "10.0";
+            // 
+            // lbLuzY
+            // 
+            this.lbLuzY.AutoSize = true;
+            this.lbLuzY.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.lbLuzY.Location = new System.Drawing.Point(121, 70);
+            this.lbLuzY.Name = "lbLuzY";
+            this.lbLuzY.Size = new System.Drawing.Size(28, 13);
+            this.lbLuzY.TabIndex = 38;
+            this.lbLuzY.Text = "10.0";
+            // 
+            // lbLuzX
+            // 
+            this.lbLuzX.AutoSize = true;
+            this.lbLuzX.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.lbLuzX.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.lbLuzX.Location = new System.Drawing.Point(123, 3);
+            this.lbLuzX.Name = "lbLuzX";
+            this.lbLuzX.Size = new System.Drawing.Size(28, 13);
+            this.lbLuzX.TabIndex = 37;
+            this.lbLuzX.Text = "10.0";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(130, 279);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(105, 13);
+            this.label9.TabIndex = 36;
+            this.label9.Text = "Mostrar Componente";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(209, 225);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(123, 13);
+            this.label8.TabIndex = 35;
+            this.label8.Text = "Modelos de Tonalização";
+            // 
+            // lbN
+            // 
+            this.lbN.AutoSize = true;
+            this.lbN.Location = new System.Drawing.Point(202, 161);
+            this.lbN.Name = "lbN";
+            this.lbN.Size = new System.Drawing.Size(67, 13);
+            this.lbN.TabIndex = 34;
+            this.lbN.Text = "n - Shininess";
+            // 
+            // cbAlgortimo
+            // 
+            this.cbAlgortimo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbAlgortimo.FormattingEnabled = true;
+            this.cbAlgortimo.Items.AddRange(new object[] {
+            "Phong",
+            "Gouraud",
+            "Flat"});
+            this.cbAlgortimo.Location = new System.Drawing.Point(202, 241);
+            this.cbAlgortimo.Name = "cbAlgortimo";
+            this.cbAlgortimo.Size = new System.Drawing.Size(130, 21);
+            this.cbAlgortimo.TabIndex = 33;
+            this.cbAlgortimo.SelectedIndexChanged += new System.EventHandler(this.cbAlgortimo_SelectedIndexChanged);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.groupBox2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.groupBox2.Controls.Add(this.rbDifusa);
+            this.groupBox2.Controls.Add(this.rbAmbiente);
+            this.groupBox2.Controls.Add(this.rbTotal);
+            this.groupBox2.Controls.Add(this.rbEspecular);
+            this.groupBox2.Location = new System.Drawing.Point(16, 295);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(340, 56);
+            this.groupBox2.TabIndex = 8;
+            this.groupBox2.TabStop = false;
+            // 
+            // rbDifusa
+            // 
+            this.rbDifusa.AutoSize = true;
+            this.rbDifusa.Location = new System.Drawing.Point(243, 13);
+            this.rbDifusa.Name = "rbDifusa";
+            this.rbDifusa.Size = new System.Drawing.Size(55, 17);
+            this.rbDifusa.TabIndex = 3;
+            this.rbDifusa.TabStop = true;
+            this.rbDifusa.Text = "Difusa";
+            this.rbDifusa.UseVisualStyleBackColor = true;
+            this.rbDifusa.CheckedChanged += new System.EventHandler(this.rbDifusa_CheckedChanged);
+            // 
+            // rbAmbiente
+            // 
+            this.rbAmbiente.AutoSize = true;
+            this.rbAmbiente.Location = new System.Drawing.Point(119, 13);
+            this.rbAmbiente.Name = "rbAmbiente";
+            this.rbAmbiente.Size = new System.Drawing.Size(69, 17);
+            this.rbAmbiente.TabIndex = 2;
+            this.rbAmbiente.TabStop = true;
+            this.rbAmbiente.Text = "Ambiente";
+            this.rbAmbiente.UseVisualStyleBackColor = true;
+            this.rbAmbiente.CheckedChanged += new System.EventHandler(this.rbAmbiente_CheckedChanged);
+            // 
+            // rbTotal
+            // 
+            this.rbTotal.AutoSize = true;
+            this.rbTotal.Location = new System.Drawing.Point(18, 13);
+            this.rbTotal.Name = "rbTotal";
+            this.rbTotal.Size = new System.Drawing.Size(49, 17);
+            this.rbTotal.TabIndex = 0;
+            this.rbTotal.TabStop = true;
+            this.rbTotal.Text = "Total";
+            this.rbTotal.UseVisualStyleBackColor = true;
+            this.rbTotal.CheckedChanged += new System.EventHandler(this.rbTotal_CheckedChanged);
+            // 
+            // rbEspecular
+            // 
+            this.rbEspecular.AutoSize = true;
+            this.rbEspecular.Location = new System.Drawing.Point(18, 34);
+            this.rbEspecular.Name = "rbEspecular";
+            this.rbEspecular.Size = new System.Drawing.Size(72, 17);
+            this.rbEspecular.TabIndex = 1;
+            this.rbEspecular.TabStop = true;
+            this.rbEspecular.Text = "Especular";
+            this.rbEspecular.UseVisualStyleBackColor = true;
+            this.rbEspecular.CheckedChanged += new System.EventHandler(this.rbEspecular_CheckedChanged);
+            // 
+            // checkBoxLuz
+            // 
+            this.checkBoxLuz.AutoSize = true;
+            this.checkBoxLuz.Location = new System.Drawing.Point(16, 196);
+            this.checkBoxLuz.Name = "checkBoxLuz";
+            this.checkBoxLuz.Size = new System.Drawing.Size(43, 17);
+            this.checkBoxLuz.TabIndex = 31;
+            this.checkBoxLuz.Text = "Luz";
+            this.checkBoxLuz.UseVisualStyleBackColor = true;
+            this.checkBoxLuz.CheckedChanged += new System.EventHandler(this.checkBoxLuz_CheckedChanged);
+            // 
+            // buttonEscolherCorLuz
+            // 
+            this.buttonEscolherCorLuz.BackColor = System.Drawing.SystemColors.Window;
+            this.buttonEscolherCorLuz.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.buttonEscolherCorLuz.FlatAppearance.BorderSize = 0;
+            this.buttonEscolherCorLuz.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonEscolherCorLuz.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonEscolherCorLuz.Location = new System.Drawing.Point(65, 190);
+            this.buttonEscolherCorLuz.Name = "buttonEscolherCorLuz";
+            this.buttonEscolherCorLuz.Size = new System.Drawing.Size(84, 23);
+            this.buttonEscolherCorLuz.TabIndex = 32;
+            this.buttonEscolherCorLuz.Text = "Escolher Cor";
+            this.buttonEscolherCorLuz.UseVisualStyleBackColor = false;
+            this.buttonEscolherCorLuz.Click += new System.EventHandler(this.buttonEscolherCorLuz_Click);
+            // 
+            // trackBarN
+            // 
+            this.trackBarN.LargeChange = 1;
+            this.trackBarN.Location = new System.Drawing.Point(186, 177);
+            this.trackBarN.Maximum = 256;
+            this.trackBarN.Minimum = 1;
+            this.trackBarN.Name = "trackBarN";
+            this.trackBarN.Size = new System.Drawing.Size(179, 45);
+            this.trackBarN.TabIndex = 29;
+            this.trackBarN.Value = 10;
+            this.trackBarN.Scroll += new System.EventHandler(this.trackBarN_Scroll);
+            // 
+            // lbKs
+            // 
+            this.lbKs.AutoSize = true;
+            this.lbKs.Location = new System.Drawing.Point(202, 113);
+            this.lbKs.Name = "lbKs";
+            this.lbKs.Size = new System.Drawing.Size(130, 13);
+            this.lbKs.TabIndex = 28;
+            this.lbKs.Text = "ks - Coeficiente Especular";
+            // 
+            // lbKd
+            // 
+            this.lbKd.AutoSize = true;
+            this.lbKd.Location = new System.Drawing.Point(203, 54);
+            this.lbKd.Name = "lbKd";
+            this.lbKd.Size = new System.Drawing.Size(120, 13);
+            this.lbKd.TabIndex = 27;
+            this.lbKd.Text = "kd - Coefieciente Difuso";
+            // 
+            // lbKa
+            // 
+            this.lbKa.AutoSize = true;
+            this.lbKa.Location = new System.Drawing.Point(202, 3);
+            this.lbKa.Name = "lbKa";
+            this.lbKa.Size = new System.Drawing.Size(128, 13);
+            this.lbKa.TabIndex = 26;
+            this.lbKa.Text = "ka - Coeficiente Ambiente";
+            // 
+            // trackBarKs
+            // 
+            this.trackBarKs.LargeChange = 1;
+            this.trackBarKs.Location = new System.Drawing.Point(185, 129);
+            this.trackBarKs.Maximum = 100;
+            this.trackBarKs.Name = "trackBarKs";
+            this.trackBarKs.Size = new System.Drawing.Size(189, 45);
+            this.trackBarKs.TabIndex = 25;
+            this.trackBarKs.Value = 50;
+            this.trackBarKs.Scroll += new System.EventHandler(this.trackBarKs_Scroll);
+            // 
+            // trackBarKd
+            // 
+            this.trackBarKd.LargeChange = 1;
+            this.trackBarKd.Location = new System.Drawing.Point(186, 70);
+            this.trackBarKd.Maximum = 100;
+            this.trackBarKd.Name = "trackBarKd";
+            this.trackBarKd.Size = new System.Drawing.Size(188, 45);
+            this.trackBarKd.TabIndex = 24;
+            this.trackBarKd.Value = 80;
+            this.trackBarKd.Scroll += new System.EventHandler(this.trackBarKd_Scroll);
+            // 
+            // trackBarKa
+            // 
+            this.trackBarKa.LargeChange = 1;
+            this.trackBarKa.Location = new System.Drawing.Point(186, 17);
+            this.trackBarKa.Maximum = 100;
+            this.trackBarKa.Name = "trackBarKa";
+            this.trackBarKa.Size = new System.Drawing.Size(188, 45);
+            this.trackBarKa.TabIndex = 23;
+            this.trackBarKa.Value = 20;
+            this.trackBarKa.Scroll += new System.EventHandler(this.trackBarKa_Scroll);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(13, 129);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(34, 13);
+            this.label3.TabIndex = 22;
+            this.label3.Text = "Luz Z";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(13, 65);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(34, 13);
+            this.label2.TabIndex = 21;
+            this.label2.Text = "Luz Y";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 3);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(34, 13);
+            this.label1.TabIndex = 20;
+            this.label1.Text = "Luz X";
+            // 
+            // trackBarLuzZ
+            // 
+            this.trackBarLuzZ.Location = new System.Drawing.Point(6, 145);
+            this.trackBarLuzZ.Maximum = 100;
+            this.trackBarLuzZ.Minimum = -100;
+            this.trackBarLuzZ.Name = "trackBarLuzZ";
+            this.trackBarLuzZ.Size = new System.Drawing.Size(145, 45);
+            this.trackBarLuzZ.TabIndex = 19;
+            this.trackBarLuzZ.Value = 100;
+            this.trackBarLuzZ.Scroll += new System.EventHandler(this.trackBarLuzZ_Scroll);
+            // 
+            // trackBarLuzY
+            // 
+            this.trackBarLuzY.Location = new System.Drawing.Point(6, 81);
+            this.trackBarLuzY.Maximum = 100;
+            this.trackBarLuzY.Minimum = -100;
+            this.trackBarLuzY.Name = "trackBarLuzY";
+            this.trackBarLuzY.Size = new System.Drawing.Size(145, 45);
+            this.trackBarLuzY.TabIndex = 18;
+            this.trackBarLuzY.Value = 100;
+            this.trackBarLuzY.Scroll += new System.EventHandler(this.trackBarLuzY_Scroll);
+            // 
+            // trackBarLuzX
+            // 
+            this.trackBarLuzX.Location = new System.Drawing.Point(6, 19);
+            this.trackBarLuzX.Maximum = 100;
+            this.trackBarLuzX.Minimum = -100;
+            this.trackBarLuzX.Name = "trackBarLuzX";
+            this.trackBarLuzX.Size = new System.Drawing.Size(155, 45);
+            this.trackBarLuzX.TabIndex = 17;
+            this.trackBarLuzX.Value = 50;
+            this.trackBarLuzX.Scroll += new System.EventHandler(this.trackBarLuzX_Scroll);
             // 
             // textBox1
             // 
@@ -254,7 +574,7 @@
             this.panel2.Controls.Add(this.btnEscolherCorZBuffer);
             this.panel2.Location = new System.Drawing.Point(17, 42);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(367, 208);
+            this.panel2.Size = new System.Drawing.Size(375, 208);
             this.panel2.TabIndex = 5;
             // 
             // btnLimparProjecoes
@@ -415,270 +735,38 @@
             this.textBox2.Text = "Ortográfica";
             this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // trackBarLuzX
+            // checkBoxZBuffer
             // 
-            this.trackBarLuzX.Location = new System.Drawing.Point(16, 19);
-            this.trackBarLuzX.Name = "trackBarLuzX";
-            this.trackBarLuzX.Size = new System.Drawing.Size(155, 45);
-            this.trackBarLuzX.TabIndex = 17;
-            this.trackBarLuzX.Scroll += new System.EventHandler(this.trackBarLuzX_Scroll);
+            this.checkBoxZBuffer.AutoSize = true;
+            this.checkBoxZBuffer.Location = new System.Drawing.Point(16, 175);
+            this.checkBoxZBuffer.Name = "checkBoxZBuffer";
+            this.checkBoxZBuffer.Size = new System.Drawing.Size(64, 17);
+            this.checkBoxZBuffer.TabIndex = 14;
+            this.checkBoxZBuffer.Text = "Z-Buffer";
+            this.checkBoxZBuffer.UseVisualStyleBackColor = true;
+            this.checkBoxZBuffer.CheckedChanged += new System.EventHandler(this.checkBoxZBuffer_CheckedChanged);
             // 
-            // trackBarLuzY
+            // btnEscolherCorZBuffer
             // 
-            this.trackBarLuzY.Location = new System.Drawing.Point(16, 81);
-            this.trackBarLuzY.Name = "trackBarLuzY";
-            this.trackBarLuzY.Size = new System.Drawing.Size(145, 45);
-            this.trackBarLuzY.TabIndex = 18;
-            this.trackBarLuzY.Scroll += new System.EventHandler(this.trackBarLuzY_Scroll);
-            // 
-            // trackBarLuzZ
-            // 
-            this.trackBarLuzZ.Location = new System.Drawing.Point(16, 145);
-            this.trackBarLuzZ.Name = "trackBarLuzZ";
-            this.trackBarLuzZ.Size = new System.Drawing.Size(145, 45);
-            this.trackBarLuzZ.TabIndex = 19;
-            this.trackBarLuzZ.Scroll += new System.EventHandler(this.trackBarLuzZ_Scroll);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(63, 3);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(34, 13);
-            this.label1.TabIndex = 20;
-            this.label1.Text = "Luz X";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(63, 65);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(34, 13);
-            this.label2.TabIndex = 21;
-            this.label2.Text = "Luz Y";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(63, 129);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(34, 13);
-            this.label3.TabIndex = 22;
-            this.label3.Text = "Luz Z";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(233, 129);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(20, 13);
-            this.label4.TabIndex = 28;
-            this.label4.Text = "kS";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(233, 65);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(19, 13);
-            this.label5.TabIndex = 27;
-            this.label5.Text = "kd";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(233, 3);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(19, 13);
-            this.label6.TabIndex = 26;
-            this.label6.Text = "ka";
-            // 
-            // trackBarKs
-            // 
-            this.trackBarKs.LargeChange = 1;
-            this.trackBarKs.Location = new System.Drawing.Point(186, 145);
-            this.trackBarKs.Maximum = 100;
-            this.trackBarKs.Name = "trackBarKs";
-            this.trackBarKs.Size = new System.Drawing.Size(145, 45);
-            this.trackBarKs.TabIndex = 25;
-            this.trackBarKs.Value = 1;
-            this.trackBarKs.Scroll += new System.EventHandler(this.trackBarKs_Scroll);
-            // 
-            // trackBarKd
-            // 
-            this.trackBarKd.LargeChange = 1;
-            this.trackBarKd.Location = new System.Drawing.Point(186, 81);
-            this.trackBarKd.Maximum = 100;
-            this.trackBarKd.Name = "trackBarKd";
-            this.trackBarKd.Size = new System.Drawing.Size(145, 45);
-            this.trackBarKd.TabIndex = 24;
-            this.trackBarKd.Scroll += new System.EventHandler(this.trackBarKd_Scroll);
-            // 
-            // trackBarKa
-            // 
-            this.trackBarKa.LargeChange = 1;
-            this.trackBarKa.Location = new System.Drawing.Point(186, 19);
-            this.trackBarKa.Maximum = 100;
-            this.trackBarKa.Name = "trackBarKa";
-            this.trackBarKa.Size = new System.Drawing.Size(155, 45);
-            this.trackBarKa.TabIndex = 23;
-            this.trackBarKa.Scroll += new System.EventHandler(this.trackBarKa_Scroll);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(233, 180);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(13, 13);
-            this.label7.TabIndex = 30;
-            this.label7.Text = "n";
-            // 
-            // trackBarN
-            // 
-            this.trackBarN.LargeChange = 1;
-            this.trackBarN.Location = new System.Drawing.Point(186, 196);
-            this.trackBarN.Maximum = 256;
-            this.trackBarN.Minimum = 1;
-            this.trackBarN.Name = "trackBarN";
-            this.trackBarN.Size = new System.Drawing.Size(145, 45);
-            this.trackBarN.TabIndex = 29;
-            this.trackBarN.Value = 1;
-            this.trackBarN.Scroll += new System.EventHandler(this.trackBarN_Scroll);
-            // 
-            // checkBoxLuz
-            // 
-            this.checkBoxLuz.AutoSize = true;
-            this.checkBoxLuz.Location = new System.Drawing.Point(16, 315);
-            this.checkBoxLuz.Name = "checkBoxLuz";
-            this.checkBoxLuz.Size = new System.Drawing.Size(43, 17);
-            this.checkBoxLuz.TabIndex = 31;
-            this.checkBoxLuz.Text = "Luz";
-            this.checkBoxLuz.UseVisualStyleBackColor = true;
-            this.checkBoxLuz.CheckedChanged += new System.EventHandler(this.checkBoxLuz_CheckedChanged);
-            // 
-            // buttonEscolherCorLuz
-            // 
-            this.buttonEscolherCorLuz.BackColor = System.Drawing.SystemColors.Window;
-            this.buttonEscolherCorLuz.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.buttonEscolherCorLuz.FlatAppearance.BorderSize = 0;
-            this.buttonEscolherCorLuz.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonEscolherCorLuz.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonEscolherCorLuz.Location = new System.Drawing.Point(66, 311);
-            this.buttonEscolherCorLuz.Name = "buttonEscolherCorLuz";
-            this.buttonEscolherCorLuz.Size = new System.Drawing.Size(84, 23);
-            this.buttonEscolherCorLuz.TabIndex = 32;
-            this.buttonEscolherCorLuz.Text = "Escolher Cor";
-            this.buttonEscolherCorLuz.UseVisualStyleBackColor = false;
-            this.buttonEscolherCorLuz.Click += new System.EventHandler(this.buttonEscolherCorLuz_Click);
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.groupBox2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.groupBox2.Controls.Add(this.rbDifusa);
-            this.groupBox2.Controls.Add(this.rbAmbiente);
-            this.groupBox2.Controls.Add(this.rbTotal);
-            this.groupBox2.Controls.Add(this.rbEspecular);
-            this.groupBox2.Location = new System.Drawing.Point(16, 230);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(340, 56);
-            this.groupBox2.TabIndex = 8;
-            this.groupBox2.TabStop = false;
-            // 
-            // rbDifusa
-            // 
-            this.rbDifusa.AutoSize = true;
-            this.rbDifusa.Location = new System.Drawing.Point(243, 13);
-            this.rbDifusa.Name = "rbDifusa";
-            this.rbDifusa.Size = new System.Drawing.Size(55, 17);
-            this.rbDifusa.TabIndex = 3;
-            this.rbDifusa.TabStop = true;
-            this.rbDifusa.Text = "Difusa";
-            this.rbDifusa.UseVisualStyleBackColor = true;
-            // 
-            // rbAmbiente
-            // 
-            this.rbAmbiente.AutoSize = true;
-            this.rbAmbiente.Location = new System.Drawing.Point(119, 13);
-            this.rbAmbiente.Name = "rbAmbiente";
-            this.rbAmbiente.Size = new System.Drawing.Size(69, 17);
-            this.rbAmbiente.TabIndex = 2;
-            this.rbAmbiente.TabStop = true;
-            this.rbAmbiente.Text = "Ambiente";
-            this.rbAmbiente.UseVisualStyleBackColor = true;
-            // 
-            // rbTotal
-            // 
-            this.rbTotal.AutoSize = true;
-            this.rbTotal.Location = new System.Drawing.Point(18, 13);
-            this.rbTotal.Name = "rbTotal";
-            this.rbTotal.Size = new System.Drawing.Size(49, 17);
-            this.rbTotal.TabIndex = 0;
-            this.rbTotal.TabStop = true;
-            this.rbTotal.Text = "Total";
-            this.rbTotal.UseVisualStyleBackColor = true;
-            // 
-            // rbEspecular
-            // 
-            this.rbEspecular.AutoSize = true;
-            this.rbEspecular.Location = new System.Drawing.Point(18, 34);
-            this.rbEspecular.Name = "rbEspecular";
-            this.rbEspecular.Size = new System.Drawing.Size(72, 17);
-            this.rbEspecular.TabIndex = 1;
-            this.rbEspecular.TabStop = true;
-            this.rbEspecular.Text = "Especular";
-            this.rbEspecular.UseVisualStyleBackColor = true;
-            // 
-            // buttonAplicarLuz
-            // 
-            this.buttonAplicarLuz.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.buttonAplicarLuz.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.buttonAplicarLuz.FlatAppearance.BorderSize = 0;
-            this.buttonAplicarLuz.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonAplicarLuz.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonAplicarLuz.Location = new System.Drawing.Point(205, 309);
-            this.buttonAplicarLuz.Name = "buttonAplicarLuz";
-            this.buttonAplicarLuz.Size = new System.Drawing.Size(68, 23);
-            this.buttonAplicarLuz.TabIndex = 16;
-            this.buttonAplicarLuz.Text = "Aplicar";
-            this.buttonAplicarLuz.UseVisualStyleBackColor = false;
-            this.buttonAplicarLuz.Click += new System.EventHandler(this.buttonAplicarLuz_Click);
-            // 
-            // buttonLimparLuz
-            // 
-            this.buttonLimparLuz.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.buttonLimparLuz.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.buttonLimparLuz.FlatAppearance.BorderSize = 0;
-            this.buttonLimparLuz.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonLimparLuz.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonLimparLuz.Location = new System.Drawing.Point(288, 309);
-            this.buttonLimparLuz.Name = "buttonLimparLuz";
-            this.buttonLimparLuz.Size = new System.Drawing.Size(68, 23);
-            this.buttonLimparLuz.TabIndex = 16;
-            this.buttonLimparLuz.Text = "Limpar";
-            this.buttonLimparLuz.UseVisualStyleBackColor = false;
-            this.buttonLimparLuz.Click += new System.EventHandler(this.buttonLimparLuz_Click);
-            // 
-            // cbAlgortimo
-            // 
-            this.cbAlgortimo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbAlgortimo.FormattingEnabled = true;
-            this.cbAlgortimo.Items.AddRange(new object[] {
-            "Flat",
-            "Gouraud",
-            "Phong"});
-            this.cbAlgortimo.Location = new System.Drawing.Point(28, 196);
-            this.cbAlgortimo.Name = "cbAlgortimo";
-            this.cbAlgortimo.Size = new System.Drawing.Size(121, 21);
-            this.cbAlgortimo.TabIndex = 33;
-            this.cbAlgortimo.SelectedIndexChanged += new System.EventHandler(this.cbAlgortimo_SelectedIndexChanged);
+            this.btnEscolherCorZBuffer.BackColor = System.Drawing.SystemColors.Window;
+            this.btnEscolherCorZBuffer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnEscolherCorZBuffer.FlatAppearance.BorderSize = 0;
+            this.btnEscolherCorZBuffer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnEscolherCorZBuffer.Font = new System.Drawing.Font("Ebrima", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnEscolherCorZBuffer.Location = new System.Drawing.Point(87, 171);
+            this.btnEscolherCorZBuffer.Name = "btnEscolherCorZBuffer";
+            this.btnEscolherCorZBuffer.Size = new System.Drawing.Size(84, 23);
+            this.btnEscolherCorZBuffer.TabIndex = 15;
+            this.btnEscolherCorZBuffer.Text = "Escolher Cor";
+            this.btnEscolherCorZBuffer.UseVisualStyleBackColor = false;
+            this.btnEscolherCorZBuffer.Click += new System.EventHandler(this.btnEscolherCorZBuffer_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(1167, 671);
+            this.ClientSize = new System.Drawing.Size(1171, 671);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panelCabecalho);
             this.Controls.Add(this.pictureBox1);
@@ -690,21 +778,21 @@
             this.panel1.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarN)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarKs)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarKd)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarKa)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzZ)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzX)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzX)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzY)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzZ)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarKs)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarKd)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarKa)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarN)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
-            this.cbAlgortimo.SelectedIndex = 0;
+
         }
 
         #endregion
@@ -740,13 +828,12 @@
         private System.Windows.Forms.TrackBar trackBarLuzZ;
         private System.Windows.Forms.TrackBar trackBarLuzY;
         private System.Windows.Forms.TrackBar trackBarLuzX;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label lbKs;
+        private System.Windows.Forms.Label lbKd;
+        private System.Windows.Forms.Label lbKa;
         private System.Windows.Forms.TrackBar trackBarKs;
         private System.Windows.Forms.TrackBar trackBarKd;
         private System.Windows.Forms.TrackBar trackBarKa;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TrackBar trackBarN;
         private System.Windows.Forms.CheckBox checkBoxLuz;
         private System.Windows.Forms.Button buttonEscolherCorLuz;
@@ -755,9 +842,17 @@
         private System.Windows.Forms.RadioButton rbAmbiente;
         private System.Windows.Forms.RadioButton rbTotal;
         private System.Windows.Forms.RadioButton rbEspecular;
-        private System.Windows.Forms.Button buttonLimparLuz;
-        private System.Windows.Forms.Button buttonAplicarLuz;
         private System.Windows.Forms.ComboBox cbAlgortimo;
+        private System.Windows.Forms.Label lbN;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label lbKa2;
+        private System.Windows.Forms.Label lbKd2;
+        private System.Windows.Forms.Label lbKs2;
+        private System.Windows.Forms.Label lbN2;
+        private System.Windows.Forms.Label lbLuzZ;
+        private System.Windows.Forms.Label lbLuzY;
+        private System.Windows.Forms.Label lbLuzX;
     }
 }
 

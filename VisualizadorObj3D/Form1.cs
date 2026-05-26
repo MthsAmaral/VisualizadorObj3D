@@ -2,8 +2,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using VisualizadorObj3D.Classes;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace VisualizadorObj3D
 {
@@ -12,7 +10,7 @@ namespace VisualizadorObj3D
         private Obj3D obj3d; // Variável para armazenar o objeto 3D carregado
         private Point ultimaPosicaoObj;
 
-   
+        //escala
         private double escala = 1; // 1 por default
         //translação
         private bool arrastando = false;
@@ -25,7 +23,7 @@ namespace VisualizadorObj3D
         // Flags
         private bool ehProjecao = false;
         private bool eliminarFacesOcultas = false;
-        //Projecao Ortografica
+        //Projecao -> denota o tipo de projeção utilizada
         public static char c = ' ';
 
         private Timer timerRender;
@@ -33,6 +31,15 @@ namespace VisualizadorObj3D
 
         private Color corZBuffer = Color.White;
 
+        // Luz
+        private bool usarLuz = false;
+        private double luzX = 0, luzY = 0, luzZ = 0;
+        private Color corLuz = Color.White;
+        // Tonalização
+        private double ka = 0, kd = 0, ks = 0;
+        private int nEspecular = 0;
+        private String tipoTonalizacao = "flat";
+        private String componente = "total";
         public Form1()
         {
             InitializeComponent();
@@ -49,7 +56,6 @@ namespace VisualizadorObj3D
             timerRender.Tick += TimerRender_Tick;
             timerRender.Start();
         }
-
 
         private void btnAbrirArquivo_Click(object sender, EventArgs e)
         {
@@ -173,6 +179,11 @@ namespace VisualizadorObj3D
                     translacaoY += deltaY;
 
                     ultimaPosicaoObj = e.Location;
+
+                    // mudo os valores de rotação na matriz AQUI!
+
+
+                    //redesenha aqui
                     precisaRedesenhar = true;
                 }
                 else if(rotacionando)
@@ -186,6 +197,11 @@ namespace VisualizadorObj3D
                     rotacaoX += deltaY * 0.5;
 
                     ultimaPosicaoObj = e.Location;
+
+                    // mudo os valores de rotação na matriz AQUI!
+
+
+                    //redesenha aqui
                     precisaRedesenhar = true;
                 }
                 
@@ -210,30 +226,47 @@ namespace VisualizadorObj3D
         {
             obj3d.ResetarMatrizAcumulada();//reseta a matriz acumulada para identidade antes de aplicar as transformações atuais
 
-
             // primeiro translação, depois rotação e por último escala
             obj3d.MultiplicaMatrizTranslacao(translacaoX, -translacaoY, 0);
-         
+            
             obj3d.MultiplicaMatrizRotacao((int)rotacaoX, 'x');
             obj3d.MultiplicaMatrizRotacao((int)rotacaoY, 'y');
             
-            
             obj3d.MultiplicaMatrizEscala(escala, escala, escala);
-            
 
             Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c, eliminarFacesOcultas);
-           
+            
             if(checkBoxZBuffer.Checked)
             {
-                obj3d.PreencherObjeto3D(corZBuffer);
+                obj3d.PreencherObjeto3D(corZBuffer, usarLuz, tipoTonalizacao, ehProjecao, c,
+                    corLuz, luzX, luzY,  luzZ,  ka,  kd,  ks, nEspecular, componente);
                 pictureBox1.Image = obj3d.bitmap;
             }
             else
                 pictureBox1.Image = imagem;
         }
 
+        private void RepreencherUnico(String operacao, String parametroIluminacao)
+        {
+            if(operacao.Equals("iluminacao")) // --> teoricamente o usarLuz vai estar ativo
+            {
+                //para garantir
+                usarLuz = true;
+            }
+            else
+            {
+                obj3d.ResetarMatrizAcumulada();
+                obj3d.MultiplicaMatrizTranslacao(translacaoX, -translacaoY, 0);
+                obj3d.MultiplicaMatrizRotacao((int)rotacaoX, 'x');
+                obj3d.MultiplicaMatrizRotacao((int)rotacaoY, 'y');
+                obj3d.MultiplicaMatrizEscala(escala, escala, escala);
+            }
 
-
+            // chamo o preencher objeto novamente com a matriz atualizada
+            obj3d.PreencherObjeto3D(corZBuffer, usarLuz, tipoTonalizacao, ehProjecao, c,
+                    corLuz, luzX, luzY,  luzZ,  ka,  kd,  ks, nEspecular, componente);
+            pictureBox1.Image = obj3d.bitmap;
+        }
 
         //====================================================================================================================================================
         // ======= PROJEÇÕES =======
@@ -302,9 +335,6 @@ namespace VisualizadorObj3D
             }
         }
 
-
-
-
         //====================================================================================================================================================
         // ======= Z-Buffer =======
         private void checkBoxZBuffer_CheckedChanged(object sender, EventArgs e)
@@ -348,64 +378,172 @@ namespace VisualizadorObj3D
             }
         }
 
+        
+        // LUZ
+
+        private void buttonEscolherCorLuz_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            colorDialog.AllowFullOpen = true;
+            colorDialog.AnyColor = true;
+            colorDialog.Color = corLuz;
+
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                corLuz = colorDialog.Color;
+                buttonEscolherCorLuz.BackColor = corLuz;
+
+                double brilho = (corLuz.R * 0.299) + (corLuz.G * 0.587) + (corLuz.B * 0.114);
+                if (brilho < 186)
+                    buttonEscolherCorLuz.ForeColor = Color.White;
+                else
+                    buttonEscolherCorLuz.ForeColor = Color.Black;
+
+                if (obj3d != null && usarLuz)
+                    Redesenhar();
+            }
+        }
+
+        private void checkBoxLuz_CheckedChanged(object sender, EventArgs e) // aqui
+        {
+            // esse usar luz retorna true ou false --> usar iluminação ou não
+            usarLuz = checkBoxLuz.Checked;
+
+            // ativar desativar componentes de iluminação
+            AtivarDesativarComponentesIluminacao(usarLuz);
+
+            // seta t
+            precisaRedesenhar = true;
+        }
+        
+        private void AtivarDesativarComponentesIluminacao(bool flag)
+        {
+            trackBarKa.Visible = flag;
+            lbKa.Visible = flag;
+
+            trackBarKd.Visible = flag;
+            lbKd.Visible = flag;
+
+            trackBarKs.Visible = flag;
+            lbKs.Visible = flag;
+
+            trackBarN.Visible = flag;
+            lbN.Visible = flag;
+
+            
+            trackBarLuzX.Visible = flag;
+            lbLuzX.Visible = flag;
+            
+            trackBarLuzY.Visible = flag;
+            lbLuzY.Visible = flag;
+
+            trackBarLuzZ.Visible = flag;
+            lbLuzZ.Visible = flag;
+
+            cbAlgortimo.Visible = flag;
+            checkBoxLuz.Visible = flag;
+            
+        }
+
         private void trackBarLuzX_Scroll(object sender, EventArgs e)
         {
+            luzX = trackBarLuzX.Value / 100.0;
+            lbLuzX.Text = luzX.ToString("0.00"); //definir duas casas decimais
 
+            //repreencher
+            RepreencherUnico("iluminacao", "x");
+            precisaRedesenhar = true;
         }
 
         private void trackBarLuzY_Scroll(object sender, EventArgs e)
         {
+            luzY = trackBarLuzY.Value / 100.0;
+            lbLuzY.Text = luzY.ToString("0.00");
 
+            //repreencher
+            RepreencherUnico("iluminacao", "y");
+            precisaRedesenhar = true;
         }
 
         private void trackBarLuzZ_Scroll(object sender, EventArgs e)
         {
+            luzZ = trackBarLuzZ.Value / 100.0;
+            lbLuzZ.Text = luzZ.ToString("0.00");
 
+            //repreencher
+            RepreencherUnico("iluminacao", "z");
+            precisaRedesenhar = true;
         }
-
+        
         private void trackBarKa_Scroll(object sender, EventArgs e)
         {
+            ka = trackBarKa.Value / 100.0;
+            lbKa2.Text = ka.ToString("0.00");
 
+            //repreencher
+            RepreencherUnico("iluminacao", "ka");
+            precisaRedesenhar = true;
+        }
+
+        private void rbTotal_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbTotal.Checked)
+                componente = "total";
+        }
+
+        private void rbAmbiente_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbAmbiente.Checked)
+                componente = "ambiente";
+        }
+
+        private void rbDifusa_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbDifusa.Checked)
+                componente = "difusa";
+        }
+
+        private void rbEspecular_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbEspecular.Checked)
+                componente = "especular";
         }
 
         private void trackBarKd_Scroll(object sender, EventArgs e)
         {
+            kd = trackBarKd.Value / 100.0;
+            lbKd2.Text = kd.ToString("0.00");
 
+            //repreencher
+            RepreencherUnico("iluminacao", "kd");
+            precisaRedesenhar = true;
         }
 
         private void trackBarKs_Scroll(object sender, EventArgs e)
         {
+            ks = trackBarKs.Value / 100.0;
+            lbKs2.Text = ks.ToString("0.00");
 
+            //repreencher
+            RepreencherUnico("iluminacao", "ks");
+            precisaRedesenhar = true;
         }
 
         private void trackBarN_Scroll(object sender, EventArgs e)
         {
+            nEspecular = trackBarN.Value;
+            lbN2.Text = nEspecular.ToString();
 
+            //repreencher
+            RepreencherUnico("iluminacao", "n");
+            precisaRedesenhar = true;
         }
 
-        private void buttonEscolherCorLuz_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void checkBoxLuz_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void buttonAplicarLuz_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void buttonLimparLuz_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        // Escolher Algortimo
         private void cbAlgortimo_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            tipoTonalizacao = cbAlgortimo.SelectedItem.ToString().ToLower();
+            precisaRedesenhar = true;
         }
     }
 }

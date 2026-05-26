@@ -123,19 +123,38 @@ namespace ProcessamentoImagens.classes
                 double auxXInc = posMenor.xInc;
                 double auxZmin = posMenor.zMin;
                 double auxZInc = posMenor.zInc;
+                double auxRMin = posMenor.rMin;
+                double auxGMin = posMenor.gMin;
+                double auxBMin = posMenor.bMin;
+                double auxRInc = posMenor.rInc;
+                double auxGInc = posMenor.gInc;
+                double auxBInc = posMenor.bInc;
+
 
                 posMenor.yMax = i.yMax;
                 posMenor.xMin = i.xMin;
                 posMenor.xInc = i.xInc;
                 posMenor.zMin = i.zMin;
                 posMenor.zInc = i.zInc;
-
-
+                posMenor.rMin = i.rMin;
+                posMenor.gMin = i.gMin;
+                posMenor.bMin = i.bMin;
+                posMenor.rInc = i.rInc;
+                posMenor.gInc = i.gInc;
+                posMenor.bInc = i.bInc;
+                
                 i.yMax = auxYMax;
                 i.xMin = auxXMin;
                 i.xInc = auxXInc;
                 i.zInc = auxZInc;
                 i.zMin = auxZmin;
+                i.rMin = auxRMin;
+                i.gMin = auxGMin;
+                i.bMin = auxBMin;
+                i.rInc = auxRInc;
+                i.gInc = auxGInc;
+                i.bInc = auxBInc;
+
 
                 i = i.prox;
             }
