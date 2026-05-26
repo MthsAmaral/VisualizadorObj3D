@@ -191,7 +191,7 @@ namespace VisualizadorObj3D.Classes
                     }
 
                 default://assume frontal
-                    return new PointReal(0, 0, -1);
+                    return new PointReal(0, 0, 1);
             }
         }
     }
