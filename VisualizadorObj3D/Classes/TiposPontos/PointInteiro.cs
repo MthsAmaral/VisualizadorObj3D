@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProcessamentoImagens.Classes
+namespace VisualizadorObj3D.Classes
 {
     public class PointInteiro
     {
@@ -14,12 +14,12 @@ namespace ProcessamentoImagens.Classes
         public int R { get; set; }
         public int G { get; set; }
         public int B { get; set; }
-        public int DX { get; set; }
-        public int DY { get; set; }
-        public int DZ { get; set; }
+        public int NX { get; set; }
+        public int NY { get; set; }
+        public int NZ { get; set; }
         public PointInteiro()
         {
-            X = Y = Z = R = G = B = -1;
+            X = Y = Z = R = G = B = NX = NY = NZ = -1;
         }
         public PointInteiro(int x, int y, int z)
         {
@@ -35,6 +35,18 @@ namespace ProcessamentoImagens.Classes
             R = r;
             G = g;
             B = b;
+        }
+        public PointInteiro(int x, int y, int z, int r, int g, int b, int nx, int ny, int nz)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            R = r;
+            G = g;
+            B = b;
+            NX = nx;
+            NY = ny;
+            NZ = nz;
         }
     }
 }

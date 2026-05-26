@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProcessamentoImagens.classes
+namespace VisualizadorObj3D.classes
 {
     internal class EdgeTable
     {
@@ -129,7 +129,12 @@ namespace ProcessamentoImagens.classes
                 double auxRInc = posMenor.rInc;
                 double auxGInc = posMenor.gInc;
                 double auxBInc = posMenor.bInc;
-
+                double auxNXMin = posMenor.nxMin;
+                double auxNYMin = posMenor.nyMin;
+                double auxNZMin = posMenor.nzMin;
+                double auxNXInc = posMenor.nxInc;
+                double auxNYInc = posMenor.nyInc;
+                double auxNZInc = posMenor.nzInc;
 
                 posMenor.yMax = i.yMax;
                 posMenor.xMin = i.xMin;
@@ -142,7 +147,13 @@ namespace ProcessamentoImagens.classes
                 posMenor.rInc = i.rInc;
                 posMenor.gInc = i.gInc;
                 posMenor.bInc = i.bInc;
-                
+                posMenor.nxMin = i.nxMin;
+                posMenor.nyMin = i.nyMin;
+                posMenor.nzMin = i.nzMin;
+                posMenor.nxInc = i.nxInc;
+                posMenor.nyInc = i.nyInc;
+                posMenor.nzInc = i.nzInc;
+
                 i.yMax = auxYMax;
                 i.xMin = auxXMin;
                 i.xInc = auxXInc;
@@ -154,7 +165,12 @@ namespace ProcessamentoImagens.classes
                 i.rInc = auxRInc;
                 i.gInc = auxGInc;
                 i.bInc = auxBInc;
-
+                i.nxMin = auxNXMin;
+                i.nyMin = auxNYMin;
+                i.nzMin = auxNZMin;
+                i.nxInc = auxNXInc;
+                i.nyInc = auxNYInc;
+                i.nzInc = auxNZInc;
 
                 i = i.prox;
             }

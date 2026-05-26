@@ -1,4 +1,4 @@
-﻿using ProcessamentoImagens.classes;
+﻿using VisualizadorObj3D.classes;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -8,28 +8,30 @@ namespace VisualizadorObj3D
     public partial class Form1 : Form
     {
         private Obj3D obj3d; // Variável para armazenar o objeto 3D carregado
-        private Point ultimaPosicaoObj;
 
-        //escala
+        // TRANSFORMAÇÕES BÁSICAS
+        // escala
         private double escala = 1; // 1 por default
-        //translação
+        // translação
         private bool arrastando = false;
         private double translacaoX = 0;
         private double translacaoY = 0;
-        //rotação
+        // rotação
         private bool rotacionando = false;
         private double rotacaoX = 0;
         private double rotacaoY = 0;
+
         // Flags
         private bool ehProjecao = false;
         private bool eliminarFacesOcultas = false;
+
         //Projecao -> denota o tipo de projeção utilizada
         public static char c = ' ';
 
         private Timer timerRender;
         private bool precisaRedesenhar = false;
-
         private Color corZBuffer = Color.White;
+        private Point ultimaPosicaoObj;
 
         // Luz
         private bool usarLuz = false;
@@ -40,23 +42,46 @@ namespace VisualizadorObj3D
         private int nEspecular = 0;
         private String tipoTonalizacao = "flat";
         private String componente = "total";
+
+        // Distancia Focal
+        public static int distanciaFocal = 100;
         public Form1()
         {
             InitializeComponent();
-
-
+            Inicializar();
+            
             // Permite que o PictureBox receba foco (necessário para o MouseWheel)
             pictureBox1.MouseEnter += (s, e) => pictureBox1.Focus();
             // Registra o evento MouseWheel manualmente
             pictureBox1.MouseWheel += pictureBox1_MouseWheel;
 
-
             timerRender = new Timer();
-            timerRender.Interval = 1; // Aproximadamente 30 FPS
+            timerRender.Interval = 16; // Aproximadamente 60 FPS
             timerRender.Tick += TimerRender_Tick;
             timerRender.Start();
+            
         }
-
+        private void Inicializar()
+        {
+            luzX = trackBarLuzX.Value / 100.0;
+            luzY = trackBarLuzY.Value / 100.0;
+            luzZ = trackBarLuzZ.Value / 100.0;
+            ka = trackBarKa.Value / 100.0;
+            kd = trackBarKd.Value / 100.0;
+            ks = trackBarKs.Value / 100.0;
+            nEspecular = trackBarN.Value;
+            lbLuzX.Text = luzX.ToString("0.00");
+            lbLuzY.Text = luzY.ToString("0.00");
+            lbLuzZ.Text = luzZ.ToString("0.00");
+            lbKa2.Text = ka.ToString("0.00");
+            lbKd2.Text = kd.ToString("0.00");
+            lbKs2.Text = ks.ToString("0.00");
+            lbN2.Text = nEspecular.ToString();
+            trackBarDistanciaFocal.Visible = false;
+            lbDistanciaFocal.Visible = false;
+            label4.Visible = false;
+            AtivarDesativarComponentesIluminacao(usarLuz);
+        }
         private void btnAbrirArquivo_Click(object sender, EventArgs e)
         {
             openFileDialog.FileName = "";
@@ -98,7 +123,7 @@ namespace VisualizadorObj3D
                 rbCavaleira.Checked = false;
                 rbCabinete.Checked = false;
                 rb1Ponto.Checked = false;
-
+                desativarDistanciaFocal();
                 // zera estados do mouse
                 arrastando = false;
                 rotacionando = false;
@@ -116,10 +141,9 @@ namespace VisualizadorObj3D
             }
         }
 
-
         //====================================================================================================================================================
         // ======= TRANSFORMAÇÕES =======
-
+        //====================================================================================================================================================
         // MouseWheel(scroll) para aumentar ou diminuir a ESCALA
         private void pictureBox1_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -137,18 +161,18 @@ namespace VisualizadorObj3D
                         escala = 0.1;
                     }
                 }
+
+                //Redesenhar("escala");
                 precisaRedesenhar = true;
             }
         }
 
+        /**
+            TRANSLAÇÃO = esquerdo do mouse
+            ROTAÇÃO = direito do mouse
 
-
-
-
-        //TRANSLAÇÃO = esquerdo do mouse
-        //ROTAÇÃO = direito do mouse
-
-        //botão pressionado pega posição do mouse e ativa arrastar
+            botão pressionado pega posição do mouse e ativa arrastar
+        */
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -163,7 +187,7 @@ namespace VisualizadorObj3D
             }
         }
 
-        //acumula translação ou rotação e redesenha se arrastando igual a true
+        // acumula translação ou rotação e redesenha se arrastando igual a true
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             if(obj3d != null)
@@ -174,7 +198,6 @@ namespace VisualizadorObj3D
                     int deltaX = e.X - ultimaPosicaoObj.X; // quanto andou horizontalmente
                     int deltaY = e.Y - ultimaPosicaoObj.Y; // quanto andou verticalmente
 
-
                     translacaoX += deltaX;
                     translacaoY += deltaY;
 
@@ -182,8 +205,8 @@ namespace VisualizadorObj3D
 
                     // mudo os valores de rotação na matriz AQUI!
 
-
                     //redesenha aqui
+                    //Redesenhar("translacao");
                     precisaRedesenhar = true;
                 }
                 else if(rotacionando)
@@ -200,13 +223,11 @@ namespace VisualizadorObj3D
 
                     // mudo os valores de rotação na matriz AQUI!
 
-
                     //redesenha aqui
+                    //Redesenhar("rotacao");
                     precisaRedesenhar = true;
                 }
-                
             }
-            
         }
 
         //	Botão solto para de arrastar
@@ -219,20 +240,30 @@ namespace VisualizadorObj3D
 
             if(obj3d != null)
                 precisaRedesenhar = true;
-
         }
 
-        private void Redesenhar()
+        private void Redesenhar(string operacao)
         {
-            obj3d.ResetarMatrizAcumulada();//reseta a matriz acumulada para identidade antes de aplicar as transformações atuais
+            // se a flag utilizar luz estiver atvada, então na verdade é para repreencher
+            if(usarLuz)
+            {
+                Repreencher("");
+                return;
+            }
 
-            // primeiro translação, depois rotação e por último escala
-            obj3d.MultiplicaMatrizTranslacao(translacaoX, -translacaoY, 0);
-            
-            obj3d.MultiplicaMatrizRotacao((int)rotacaoX, 'x');
-            obj3d.MultiplicaMatrizRotacao((int)rotacaoY, 'y');
-            
-            obj3d.MultiplicaMatrizEscala(escala, escala, escala);
+            if(operacao.ToLower().Equals("rotacao"))
+            {
+                obj3d.MultiplicaMatrizRotacao((int)rotacaoX, 'x');
+                obj3d.MultiplicaMatrizRotacao((int)rotacaoY, 'y');
+            }
+            else if(operacao.ToLower().Equals("translacao"))
+            {
+                obj3d.MultiplicaMatrizTranslacao(translacaoX, -translacaoY, 0);
+            }
+            else if(operacao.ToLower().Equals("escala"))
+            {
+                obj3d.MultiplicaMatrizEscala(escala, escala, escala);
+            }
 
             Bitmap imagem = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c, eliminarFacesOcultas);
             
@@ -246,7 +277,7 @@ namespace VisualizadorObj3D
                 pictureBox1.Image = imagem;
         }
 
-        private void RepreencherUnico(String operacao, String parametroIluminacao)
+        private void Repreencher(string operacao)
         {
             if(operacao.Equals("iluminacao")) // --> teoricamente o usarLuz vai estar ativo
             {
@@ -274,6 +305,7 @@ namespace VisualizadorObj3D
         {
             if (obj3d != null)
             {
+                desativarDistanciaFocal();
                 if (rbLateral.Checked)
                 {
                     c = 'l';
@@ -297,6 +329,9 @@ namespace VisualizadorObj3D
                 else if (rb1Ponto.Checked)
                 {
                     c = 'p';
+                    trackBarDistanciaFocal.Visible = true;
+                    lbDistanciaFocal.Visible = true;
+                    label4.Visible = true;
                 }
                 else
                 {
@@ -306,10 +341,15 @@ namespace VisualizadorObj3D
                 ehProjecao = true;
                 eliminarFacesOcultas = checkBoxEliminarFacesOcultas.Checked;
 
-                Redesenhar();
+                Redesenhar(""); // vai atualizar as informações de projeção apenas
             }
         }
-
+        private void desativarDistanciaFocal()
+        {
+            trackBarDistanciaFocal.Visible = false;
+            lbDistanciaFocal.Visible = false;
+            label4.Visible = false;
+        }
         private void btnLimparProjecoes_Click(object sender, EventArgs e)
         {
             if (obj3d != null)
@@ -323,7 +363,7 @@ namespace VisualizadorObj3D
                 rb1Ponto.Checked = false;
                 checkBoxEliminarFacesOcultas.Checked = false;
                 checkBoxZBuffer.Checked = false;
-
+                desativarDistanciaFocal();
 
                 ehProjecao = false;
                 c = ' ';
@@ -340,7 +380,7 @@ namespace VisualizadorObj3D
         private void checkBoxZBuffer_CheckedChanged(object sender, EventArgs e)
         {
             if (obj3d != null)
-                Redesenhar();
+                Redesenhar(""); // não vai alterar nenhuma transformação geométrica
         }
 
         private void TimerRender_Tick(object sender, EventArgs e)
@@ -348,7 +388,28 @@ namespace VisualizadorObj3D
             if (precisaRedesenhar && obj3d != null)
             {
                 precisaRedesenhar = false;
-                Redesenhar();
+                //reseta a matriz acumulada para identidade antes de aplicar as transformações atuais
+                obj3d.ResetarMatrizAcumulada();
+                obj3d.MultiplicaMatrizTranslacao(translacaoX, -translacaoY, 0);
+                obj3d.MultiplicaMatrizRotacao((int)rotacaoX, 'x');
+                obj3d.MultiplicaMatrizRotacao((int)rotacaoY, 'y');
+                obj3d.MultiplicaMatrizEscala(escala, escala, escala);
+                
+                if(usarLuz)
+                {
+                    Repreencher("iluminacao");
+                }
+                else
+                {
+                    if(checkBoxZBuffer.Checked)
+                    {
+                        obj3d.PreencherObjeto3D(corZBuffer, usarLuz, tipoTonalizacao, ehProjecao, c,
+                            corLuz, luzX, luzY,  luzZ,  ka,  kd,  ks, nEspecular, componente);
+                        pictureBox1.Image = obj3d.bitmap;
+                    }
+                    else
+                        pictureBox1.Image = obj3d.Desenhar(pictureBox1.Width, pictureBox1.Height, 1.0, ehProjecao, c, eliminarFacesOcultas);
+                }
             }
         }
 
@@ -372,9 +433,8 @@ namespace VisualizadorObj3D
                     btnEscolherCorZBuffer.ForeColor = Color.Black;
 
 
-
                 if (obj3d != null && checkBoxZBuffer.Checked)
-                    Redesenhar();
+                    Redesenhar(""); //não vai modificar nenhuma transformação geométrica
             }
         }
 
@@ -400,7 +460,7 @@ namespace VisualizadorObj3D
                     buttonEscolherCorLuz.ForeColor = Color.Black;
 
                 if (obj3d != null && usarLuz)
-                    Redesenhar();
+                    Redesenhar(""); //não vai modificar nenhuma transformação geométrica
             }
         }
 
@@ -420,29 +480,40 @@ namespace VisualizadorObj3D
         {
             trackBarKa.Visible = flag;
             lbKa.Visible = flag;
-
+            lbKa2.Visible = flag;
+            
             trackBarKd.Visible = flag;
             lbKd.Visible = flag;
-
+            lbKd2.Visible = flag;
+            
             trackBarKs.Visible = flag;
             lbKs.Visible = flag;
-
+            lbKs2.Visible = flag;
+            
             trackBarN.Visible = flag;
             lbN.Visible = flag;
-
+            lbN2.Visible = flag;
             
             trackBarLuzX.Visible = flag;
             lbLuzX.Visible = flag;
+            label1.Visible = flag;
             
             trackBarLuzY.Visible = flag;
             lbLuzY.Visible = flag;
-
+            label2.Visible = flag;
+            
             trackBarLuzZ.Visible = flag;
             lbLuzZ.Visible = flag;
+            label3.Visible = flag;
 
+
+            label8.Visible = flag;
             cbAlgortimo.Visible = flag;
-            checkBoxLuz.Visible = flag;
-            
+            //cbAlgortimo.SelectedIndex = 2;
+
+            label9.Visible = flag;
+            groupBox2.Visible = flag;
+            //rbTotal.Checked = true;
         }
 
         private void trackBarLuzX_Scroll(object sender, EventArgs e)
@@ -451,7 +522,7 @@ namespace VisualizadorObj3D
             lbLuzX.Text = luzX.ToString("0.00"); //definir duas casas decimais
 
             //repreencher
-            RepreencherUnico("iluminacao", "x");
+            Repreencher("iluminacao");
             precisaRedesenhar = true;
         }
 
@@ -461,7 +532,7 @@ namespace VisualizadorObj3D
             lbLuzY.Text = luzY.ToString("0.00");
 
             //repreencher
-            RepreencherUnico("iluminacao", "y");
+            Repreencher("iluminacao");
             precisaRedesenhar = true;
         }
 
@@ -471,7 +542,7 @@ namespace VisualizadorObj3D
             lbLuzZ.Text = luzZ.ToString("0.00");
 
             //repreencher
-            RepreencherUnico("iluminacao", "z");
+            Repreencher("iluminacao");
             precisaRedesenhar = true;
         }
         
@@ -481,7 +552,7 @@ namespace VisualizadorObj3D
             lbKa2.Text = ka.ToString("0.00");
 
             //repreencher
-            RepreencherUnico("iluminacao", "ka");
+            Repreencher("iluminacao");
             precisaRedesenhar = true;
         }
 
@@ -489,24 +560,47 @@ namespace VisualizadorObj3D
         {
             if (rbTotal.Checked)
                 componente = "total";
+
+            //repreencher
+            Repreencher("iluminacao");
+            precisaRedesenhar = true;
         }
 
         private void rbAmbiente_CheckedChanged(object sender, EventArgs e)
         {
             if (rbAmbiente.Checked)
                 componente = "ambiente";
+
+            //repreencher
+            Repreencher("iluminacao");
+            precisaRedesenhar = true;
         }
 
         private void rbDifusa_CheckedChanged(object sender, EventArgs e)
         {
             if (rbDifusa.Checked)
                 componente = "difusa";
+
+            //repreencher
+            Repreencher("iluminacao");
+            precisaRedesenhar = true;
         }
 
         private void rbEspecular_CheckedChanged(object sender, EventArgs e)
         {
             if (rbEspecular.Checked)
                 componente = "especular";
+
+            //repreencher
+            Repreencher("iluminacao");
+            precisaRedesenhar = true;
+        }
+
+        private void trackBarDistanciaFocal_Scroll(object sender, EventArgs e)
+        {
+            distanciaFocal = trackBarDistanciaFocal.Value;
+            lbDistanciaFocal.Text = distanciaFocal.ToString();
+            precisaRedesenhar = true;
         }
 
         private void trackBarKd_Scroll(object sender, EventArgs e)
@@ -515,7 +609,7 @@ namespace VisualizadorObj3D
             lbKd2.Text = kd.ToString("0.00");
 
             //repreencher
-            RepreencherUnico("iluminacao", "kd");
+            Repreencher("iluminacao");
             precisaRedesenhar = true;
         }
 
@@ -525,7 +619,7 @@ namespace VisualizadorObj3D
             lbKs2.Text = ks.ToString("0.00");
 
             //repreencher
-            RepreencherUnico("iluminacao", "ks");
+            Repreencher("iluminacao");
             precisaRedesenhar = true;
         }
 
@@ -535,7 +629,7 @@ namespace VisualizadorObj3D
             lbN2.Text = nEspecular.ToString();
 
             //repreencher
-            RepreencherUnico("iluminacao", "n");
+            Repreencher("iluminacao");
             precisaRedesenhar = true;
         }
 
@@ -543,6 +637,9 @@ namespace VisualizadorObj3D
         private void cbAlgortimo_SelectedIndexChanged(object sender, EventArgs e)
         {
             tipoTonalizacao = cbAlgortimo.SelectedItem.ToString().ToLower();
+            
+            //repreencher
+            Repreencher("iluminacao");
             precisaRedesenhar = true;
         }
     }

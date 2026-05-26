@@ -5,12 +5,10 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using VisualizadorObj3D;
 using VisualizadorObj3D.Classes;
-
-namespace ProcessamentoImagens.classes
+namespace VisualizadorObj3D.classes
 {
-    internal class Obj3D
+    public class Obj3D
     {
         private List<PointReal> VerticesOriginais { get; set; }
         private List<PointReal> VerticesNormais { get; set; }
@@ -130,6 +128,19 @@ namespace ProcessamentoImagens.classes
                             Console.WriteLine($"Vértice: {f.IndicesVertices[i]}, Normal: {f.IndicesVerticesNormais[i]}");
                     }
                 }
+
+                // cachear as informações de FacesAdjacentes para melhorar o desempenho
+                AtualizarVerticesAtuais();
+                foreach (Face f in Faces)
+                {
+                    List<PointReal> vertices = f.GetVertices(VerticesAtuais);
+                    foreach(PointReal v in vertices)
+                    {
+                        // cachear as faces adjacentes no momento do carregamento do meu objeto 3D
+                        List<Face> adjacentes = GetFacesAdjacentes(v);
+                        v.FacesAdjacentes = adjacentes;
+                    }
+                }
             }
         }
         public string[] LimparStringVazia(string[] array)
@@ -149,11 +160,23 @@ namespace ProcessamentoImagens.classes
 
         private void AtualizarVerticesAtuais()
         {
-            VerticesAtuais.Clear();
-            foreach (PointReal vertice in VerticesOriginais)
+            if (VerticesAtuais == null || VerticesAtuais.Count != VerticesOriginais.Count)
             {
-                PointReal verticeTransformado = OperacaoMatriz.AplicarMatriz(vertice, MatrizAcumulada);
-                VerticesAtuais.Add(verticeTransformado);
+                VerticesAtuais = new List<PointReal>(VerticesOriginais.Count);
+
+                for (int i = 0; i < VerticesOriginais.Count; i++)
+                {
+                    VerticesAtuais.Add(new PointReal());
+                }
+            }
+
+            for (int i = 0; i < VerticesOriginais.Count; i++)
+            {
+                PointReal transformado = OperacaoMatriz.AplicarMatriz(VerticesOriginais[i], MatrizAcumulada);
+
+                VerticesAtuais[i].X = transformado.X;
+                VerticesAtuais[i].Y = transformado.Y;
+                VerticesAtuais[i].Z = transformado.Z;
             }
         }
 
@@ -329,7 +352,7 @@ namespace ProcessamentoImagens.classes
 
         // ====================================================================================================================================================
         // ========  Z-Buffer =========
-
+        // ====================================================================================================================================================
         //metodo principal
         public void PreencherObjeto3D(Color cor, bool usarLuz, string tipoTonalizacao, bool ehProjecao, char tipoProjecao,
             Color corLuz, double luzX, double luzY, double luzZ, double ka, double kd, double ks, int nEspecular, string componente)
@@ -337,31 +360,33 @@ namespace ProcessamentoImagens.classes
             int width = bitmap.Width;
             int height = bitmap.Height;
 
-            // atualiza os vértices atuais para a exibição correta
             AtualizarVerticesAtuais();
 
             InicializarBuffers(width, height);
 
-            // coleta apenas as faces que serão preenchidas na tela
             List<Face> facesVisiveis = GetFacesVisiveis();
 
-            // traduz os vértices se for projeção
             if (ehProjecao)
                 VerticesProjetados = Projecao.Projetar(VerticesAtuais, tipoProjecao);
             else
                 VerticesProjetados = new List<PointReal>(VerticesAtuais);
 
-            // traduz os vértices para funcionar com o bitmap atual
             VerticesTela = new List<PointReal>();
             foreach (PointReal p in VerticesProjetados)
             {
                 VerticesTela.Add(ConverterParaTela(p, bitmap.Width,bitmap.Height));
             }
-
+            if (usarLuz)
+            {
+                foreach (Face f in Faces)
+                {
+                    List<PointReal> vertsDaFace = f.GetVertices(VerticesAtuais);
+                    f.CalcularVetorNormal(vertsDaFace);
+                }
+            }
             for (int i = 0; i < facesVisiveis.Count; i++)
             {
-                // passar nessa função a flag para utilização (ou não) de iluminação
-                // além do tipo de tonalização da imagem
+               
                 PreencherFaceZBuffer(facesVisiveis[i], cor, width, height, usarLuz, tipoTonalizacao, componente,
                     corLuz, luzX, luzY, luzZ, ka, kd, ks, nEspecular);
             }
@@ -378,23 +403,18 @@ namespace ProcessamentoImagens.classes
         private void PreencherFaceZBuffer(Face face, Color corObjeto, int width, int height, bool usarLuz, String tipoTonalizacao, String componente, 
             Color corLuz, double luzX, double luzY, double luzZ, double ka, double kd, double ks, int nEspecular)
         {
-            // Pegamos os vértices da face
             List<PointReal> verticesFace = face.GetVertices(VerticesAtuais);
 
             if (usarLuz)
             {
-                // 1. Calcula L, E, H UMA VEZ para a face (Atalho da Luz Direcional)
                 PointReal pontoLuz = new PointReal(luzX, luzY, luzZ);
                 face.CalcularVetorE();
                 face.CalcularVetorL(pontoLuz);
                 face.CalcularVetorH();
 
-               
                 if (tipoTonalizacao.ToLower().Equals("flat"))
                 {
                     face.CalcularVetorNormal(verticesFace);
-                    
-                    // Calcula a cor iluminada e manda pintar
                     Color corIluminada = face.CalcularCorIluminacao(corLuz, corObjeto, ka, kd, ks, nEspecular, componente);
                     pintarFaceFlat(face, corIluminada); 
                 }
@@ -406,21 +426,11 @@ namespace ProcessamentoImagens.classes
                     {
                         PointReal verticeAtual = verticesFace[i];
 
-                        // Pega emprestado os vetores da face
-                        
                         verticeAtual.VetorE = face.VetorE;
                         verticeAtual.VetorL = face.VetorL;
                         verticeAtual.VetorH = face.VetorH;
-                        List<Face> facesAdjacentes = GetFacesAdjacentes(verticeAtual);
-                        foreach (Face f in facesAdjacentes) // 'faces' é a sua lista global de todas as faces
-                        {
-                            List<PointReal> vertsDaFace = f.GetVertices(VerticesAtuais);
-                            f.CalcularVetorNormal(vertsDaFace);
-                        }
 
-                        verticeAtual.CalcularVetorNormalVertice(facesAdjacentes);
-                        // ATENÇÃO: Aqui você precisa garantir que o vértice tenha a normal dele (VetorN)
-                        // Seja lendo do arquivo .obj (o 'vn') ou calculando as adjacências se você preferir manter
+                        verticeAtual.CalcularVetorNormalVertice(verticeAtual.FacesAdjacentes);
 
                         coresFace.Add(verticeAtual.CalcularCorIluminacao(corLuz, corObjeto, ka, kd, ks, nEspecular, componente));
                     }
@@ -433,14 +443,14 @@ namespace ProcessamentoImagens.classes
                     {
                         PointReal verticeAtual = verticesFace[i];
 
-                        // Mesma coisa: Garanta que o vértice tenha a Normal dele calculada ou lida
                         verticeAtual.VetorE = face.VetorE;
                         verticeAtual.VetorL = face.VetorL;
                         verticeAtual.VetorH = face.VetorH;
+
+                        verticeAtual.CalcularVetorNormalVertice(verticeAtual.FacesAdjacentes);
                     }
 
-                    // Repassa para a Scanline do Phong fazer a mágica pixel por pixel
-                    //pintarFacePhong(face, verticesFace, corLuz, corObjeto, ka, kd, ks, nEspecular, componente);
+                    pintarFacePhong(face, verticesFace, corLuz, corObjeto, ka, kd, ks, nEspecular, componente);
                 }
             }
             else
@@ -592,6 +602,89 @@ namespace ProcessamentoImagens.classes
                 y++;
             }
         }
+        private void pintarFacePhong(Face face, List<PointReal> verticesFace, Color corLuz, Color corObjeto, double ka, double kd, double ks, int nEspecular, string componente)
+        {
+            int width = bitmap.Width;
+            int height = bitmap.Height;
+            PlanoFace plano = CalcularPlanoFace(face);
+
+            EdgeTable[] et = new EdgeTable[height];
+            FormarEdgeTablePhong(et, face, verticesFace); 
+
+            int yMin = (int)GetYMinTela(face);
+            int y = yMin;
+            EdgeTable aet = new EdgeTable();
+
+            PointReal pixelTemp = new PointReal(0, 0, 0);
+            pixelTemp.VetorL = face.VetorL; 
+            pixelTemp.VetorH = face.VetorH; 
+
+            while (!IsVectorEdgeEmpty(et, et.Length) || aet.Count() > 0)
+            {
+         
+                if (y > -1 && y < et.Length && et[y] != null)
+                {
+                    NoEdgeTable atual = et[y].GetNoEdgeTableAt(0);
+                    while (atual != null) { NoEdgeTable prox = atual.prox; atual.prox = null; aet.Add(atual); atual = prox; }
+                    et[y] = null;
+                }
+                aet.Sort(); aet.RemoveAllYMax(y);
+
+                int quant = aet.Count();
+                for (int i = 0; i < (quant / 2); i++)
+                {
+                    NoEdgeTable par1 = aet.GetNoEdgeTableAt(i * 2);
+                    NoEdgeTable par2 = aet.GetNoEdgeTableAt(i * 2 + 1);
+                    double deltaX = par2.xMin - par1.xMin;
+                    if (deltaX == 0) deltaX = 1;
+
+                    // Incrementos horizontais dos vetores X, Y, Z da Normal
+                    double nxIncHor = (par2.nxMin - par1.nxMin) / deltaX;
+                    double nyIncHor = (par2.nyMin - par1.nyMin) / deltaX;
+                    double nzIncHor = (par2.nzMin - par1.nzMin) / deltaX;
+
+                    double nxPixel = par1.nxMin;
+                    double nyPixel = par1.nyMin;
+                    double nzPixel = par1.nzMin;
+
+                    int limite = (int)Math.Ceiling(par2.xMin);
+                    for (int j = (int)Math.Ceiling(par1.xMin); j < limite; j++)
+                    {
+                        if (j >= 0 && j < width && y >= 0 && y < height)
+                        {
+                            double zAtual = CalcularZDoPlano(plano, j, y);
+
+                            if (zAtual < ZBuffer[y, j])
+                            {
+                                ZBuffer[y, j] = zAtual;
+
+                                double modN = Math.Sqrt(Math.Pow(nxPixel, 2) + Math.Pow(nyPixel, 2) + Math.Pow(nzPixel, 2));
+
+                                if (modN != 0)
+                                    pixelTemp.VetorN = new PointReal(nxPixel / modN, nyPixel / modN, nzPixel / modN);
+                                else
+                                    pixelTemp.VetorN = new PointReal(0, 0, 1);
+
+                                Color corPixel = pixelTemp.CalcularCorIluminacao(corLuz, corObjeto, ka, kd, ks, nEspecular, componente);
+
+                                FrameBuffer[y, j] = corPixel;
+                            }
+                        }
+
+                        nxPixel += nxIncHor;
+                        nyPixel += nyIncHor;
+                        nzPixel += nzIncHor;
+                    }
+                }
+                for (int i = 0; i < aet.Count(); i++)
+                {
+                    NoEdgeTable no = aet.GetNoEdgeTableAt(i);
+                    no.Incrementar(); 
+                }
+
+                y++;
+            }
+        }
         private int LimitarCor(double valor)
         {
             if (valor > 255.0)
@@ -630,23 +723,16 @@ namespace ProcessamentoImagens.classes
         {
             List<Face> facesVizinhas = new List<Face>();
 
-            // 'faces' é a lista que contém todos os polígonos do seu objeto 3D
             foreach (Face faceAtual in Faces)
             {
-                // Pega os vértices que compõem essa face específica
                 List<PointReal> verticesDestaFace = faceAtual.GetVertices(VerticesAtuais);
 
-                // Verifica se o nosso 'verticeAlvo' é um dos vértices desta face
-                foreach (PointReal v in verticesDestaFace)
+                foreach (PointReal v in verticesDestaFace)  
                 {
-                    // É mais seguro comparar as coordenadas X, Y, Z do que a referência na memória.
-                    // Se as coordenadas baterem, significa que os vértices estão no mesmo lugar (se tocam)!
+              
                     if (v.X == verticeAlvo.X && v.Y == verticeAlvo.Y && v.Z == verticeAlvo.Z)
                     {
                         facesVizinhas.Add(faceAtual);
-
-                        // Como já confirmamos que essa face toca no vértice, 
-                        // podemos parar de procurar os outros vértices dela e ir para a próxima face.
                         break;
                     }
                 }
@@ -811,6 +897,63 @@ namespace ProcessamentoImagens.classes
                     }
                 }
 
+            }
+        }
+        private void FormarEdgeTablePhong(EdgeTable[] et, Face face, List<PointReal> verticesFace)
+        {
+            for (int i = 0; i < face.IndicesVertices.Count; i++)
+            {
+                int prox = (i + 1) % face.IndicesVertices.Count;
+
+                // Geometria 2D (Tela)
+                int idx1 = face.IndicesVertices[i] - 1;
+                int idx2 = face.IndicesVertices[prox] - 1;
+                PointReal p1Tela = VerticesTela[idx1];
+                PointReal p2Tela = VerticesTela[idx2];
+
+                // Vértices 3D Reais (Com as normais calculadas no Pré-Processamento)
+                PointReal v1 = verticesFace[i];
+                PointReal v2 = verticesFace[prox];
+
+                PointReal pTopo, pBase, nTopo, nBase;
+
+                if (p1Tela.Y < p2Tela.Y)
+                {
+                    pTopo = p1Tela; pBase = p2Tela;
+                    nTopo = v1; nBase = v2;
+                }
+                else
+                {
+                    pTopo = p2Tela; pBase = p1Tela;
+                    nTopo = v2; nBase = v1;
+                }
+
+                double deltaY = pBase.Y - pTopo.Y;
+                if (deltaY > 0)
+                {
+                    NoEdgeTable novoNo = new NoEdgeTable();
+
+                    novoNo.yMax = (int)Math.Round(pBase.Y);
+                    novoNo.xMin = pTopo.X;
+                    novoNo.xInc = (pBase.X - pTopo.X) / deltaY;
+
+                    novoNo.nxMin = nTopo.VetorN.X;
+                    novoNo.nyMin = nTopo.VetorN.Y;
+                    novoNo.nzMin = nTopo.VetorN.Z;
+
+                    novoNo.nxInc = (nBase.VetorN.X - novoNo.nxMin) / deltaY;
+                    novoNo.nyInc = (nBase.VetorN.Y - novoNo.nyMin) / deltaY;
+                    novoNo.nzInc = (nBase.VetorN.Z - novoNo.nzMin) / deltaY;
+
+                    int yMin = (int)Math.Round(pTopo.Y);
+                    if (yMin >= 0 && yMin < et.Length)
+                    {
+                        if (et[yMin] == null) et[yMin] = new EdgeTable();
+                        et[yMin].Add(novoNo);
+                    }
+                }
+
+                
             }
         }
         private bool IsVectorEdgeEmpty(EdgeTable[] et, int tamanho)

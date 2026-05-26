@@ -1,4 +1,4 @@
-﻿using ProcessamentoImagens.classes;
+﻿using VisualizadorObj3D.classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace VisualizadorObj3D.Classes
             }
             else if (tipoProjecao == 'p')
             {
-                return Perspectiva1Ponto(verticesAtuais, 200);//d=200
+                return Perspectiva1Ponto(verticesAtuais, Form1.distanciaFocal);//d=200
             }
             else
             {

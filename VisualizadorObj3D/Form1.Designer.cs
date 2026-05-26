@@ -84,6 +84,9 @@
             this.checkBoxZBuffer = new System.Windows.Forms.CheckBox();
             this.btnEscolherCorZBuffer = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.trackBarDistanciaFocal = new System.Windows.Forms.TrackBar();
+            this.label4 = new System.Windows.Forms.Label();
+            this.lbDistanciaFocal = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panelCabecalho.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -98,6 +101,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBarLuzX)).BeginInit();
             this.panel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarDistanciaFocal)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -315,12 +319,14 @@
             // 
             // cbAlgortimo
             // 
+            
             this.cbAlgortimo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbAlgortimo.FormattingEnabled = true;
             this.cbAlgortimo.Items.AddRange(new object[] {
             "Phong",
             "Gouraud",
             "Flat"});
+            this.cbAlgortimo.SelectedIndex = 2;
             this.cbAlgortimo.Location = new System.Drawing.Point(202, 241);
             this.cbAlgortimo.Name = "cbAlgortimo";
             this.cbAlgortimo.Size = new System.Drawing.Size(130, 21);
@@ -367,6 +373,7 @@
             // 
             // rbTotal
             // 
+            this.rbTotal.Checked = true;
             this.rbTotal.AutoSize = true;
             this.rbTotal.Location = new System.Drawing.Point(18, 13);
             this.rbTotal.Name = "rbTotal";
@@ -606,6 +613,9 @@
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.ControlLight;
             this.groupBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.groupBox1.Controls.Add(this.lbDistanciaFocal);
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.trackBarDistanciaFocal);
             this.groupBox1.Controls.Add(this.rb1Ponto);
             this.groupBox1.Controls.Add(this.rbCabinete);
             this.groupBox1.Controls.Add(this.rbLateral);
@@ -614,7 +624,7 @@
             this.groupBox1.Controls.Add(this.rbSuperior);
             this.groupBox1.Location = new System.Drawing.Point(16, 45);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(340, 89);
+            this.groupBox1.Size = new System.Drawing.Size(349, 89);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             // 
@@ -761,6 +771,36 @@
             this.btnEscolherCorZBuffer.UseVisualStyleBackColor = false;
             this.btnEscolherCorZBuffer.Click += new System.EventHandler(this.btnEscolherCorZBuffer_Click);
             // 
+            // trackBarDistanciaFocal
+            // 
+            this.trackBarDistanciaFocal.Location = new System.Drawing.Point(207, 49);
+            this.trackBarDistanciaFocal.Maximum = 600;
+            this.trackBarDistanciaFocal.Minimum = 100;
+            this.trackBarDistanciaFocal.Name = "trackBarDistanciaFocal";
+            this.trackBarDistanciaFocal.Size = new System.Drawing.Size(142, 45);
+            this.trackBarDistanciaFocal.TabIndex = 44;
+            this.trackBarDistanciaFocal.Value = 100;
+            this.trackBarDistanciaFocal.Scroll += new System.EventHandler(this.trackBarDistanciaFocal_Scroll);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(216, 33);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(95, 13);
+            this.label4.TabIndex = 44;
+            this.label4.Text = "d - Distância Focal";
+            // 
+            // lbDistanciaFocal
+            // 
+            this.lbDistanciaFocal.AutoSize = true;
+            this.lbDistanciaFocal.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.lbDistanciaFocal.Location = new System.Drawing.Point(317, 33);
+            this.lbDistanciaFocal.Name = "lbDistanciaFocal";
+            this.lbDistanciaFocal.Size = new System.Drawing.Size(25, 13);
+            this.lbDistanciaFocal.TabIndex = 44;
+            this.lbDistanciaFocal.Text = "100";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -791,6 +831,7 @@
             this.panel2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarDistanciaFocal)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -853,6 +894,9 @@
         private System.Windows.Forms.Label lbLuzZ;
         private System.Windows.Forms.Label lbLuzY;
         private System.Windows.Forms.Label lbLuzX;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TrackBar trackBarDistanciaFocal;
+        private System.Windows.Forms.Label lbDistanciaFocal;
     }
 }
 

@@ -1,7 +1,7 @@
-﻿
-using ProcessamentoImagens.Classes;
+﻿using VisualizadorObj3D.Classes;
 
-namespace ProcessamentoImagens.classes
+
+namespace VisualizadorObj3D.classes
 {
     public class Reta
     {
@@ -37,6 +37,7 @@ namespace ProcessamentoImagens.classes
         {
             return Ini.X;
         }
+
         public int GetIniY()
         {
             return Ini.Y;
@@ -62,10 +63,12 @@ namespace ProcessamentoImagens.classes
         {
             return Fim.Z;
         }
+
         public int GetIniR()
         {
             return Ini.R;
         }
+        
         public int GetIniG()
         {
             return Ini.G;
@@ -85,6 +88,30 @@ namespace ProcessamentoImagens.classes
         public int GetFimB()
         {
             return Fim.B;
+        }
+        public int GetFimNX()
+        {
+            return Fim.NX;
+        }
+        public int GetFimNY()
+        {
+            return Fim.NY;
+        }
+        public int GetFimNZ()
+        {
+            return Fim.NZ;
+        }
+        public int GetIniNX()
+        {
+            return Ini.NX;
+        }
+        public int GetIniNY()
+        {
+            return Ini.NY;
+        }
+        public int GetIniNZ()
+        {
+            return Ini.NZ;
         }
         //usado para pintar o polígono
         public int GetYMin()

@@ -1,11 +1,10 @@
-﻿using ProcessamentoImagens.Classes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using VisualizadorObj3D.Classes;
 
-namespace ProcessamentoImagens.classes
+namespace VisualizadorObj3D.classes
 {
     public class Face
     {
@@ -37,14 +36,17 @@ namespace ProcessamentoImagens.classes
             if (moduloN != 0)
                 VetorN = CalcularDivisaoModulo(VetorN, moduloN);
         }
+
         private PointReal CalcularDivisaoModulo(PointReal v1, double modulo)
         {
             return new PointReal(v1.X / modulo, v1.Y / modulo, v1.Z / modulo);
         }
+
         private double CalcularVetorModulo(PointReal v1)
         {
             return Math.Sqrt(Math.Pow(v1.X, 2) + Math.Pow(v1.Y, 2) + Math.Pow(v1.Z, 2));
         }
+
         private PointReal CalcularProdutoVetorial(PointReal v1, PointReal v2)
         {
             double i1, i2, j1, j2, k1, k2;
@@ -57,18 +59,22 @@ namespace ProcessamentoImagens.classes
 
             return new PointReal(i1 - i2, j1 - j2, k1 -k2);
         }
+
         private double CalcularProdutoEscalar(PointReal v1, PointReal v2)
         {
             return (v1.X * v2.X) + (v1.Y * v2.Y) + (v1.Z * v2.Z);
         }
+
         private PointReal CalcularSubtracaoVetor(PointReal v1, PointReal v2)
         {
             return new PointReal(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z);
         }
+
         private PointReal CalcularAdicaoVetor(PointReal v1, PointReal v2)
         {
             return new PointReal(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
         }
+
         public void CalcularVetorE()
         {
             VetorE = new PointReal(0, 0, -1);
@@ -84,6 +90,7 @@ namespace ProcessamentoImagens.classes
             else
                 VetorL = new PointReal(0, 0, 1); 
         }
+        
         public void CalcularVetorH()
         {
             PointReal vELAdicao = CalcularAdicaoVetor(VetorL, VetorE);
@@ -236,69 +243,6 @@ namespace ProcessamentoImagens.classes
             return normal;
         }
 
-        //public Reta GetArestaAt(int pos)
-        //{
-        //    if (pos > -1 && pos < Arestas.Count)
-        //        return Arestas[pos];
-        //    return null;
-        //}
-
-        //public List<Reta> GetArestas()
-        //{
-        //    return Arestas;
-        //}
-
-        //public void AddAresta(Reta r)
-        //{
-        //    Arestas.Add(r);
-        //}
-
-        //public void ClearPoligono()
-        //{
-        //    Arestas.Clear();
-        //}
-
-        //public int CountArestas()
-        //{
-        //    return Arestas.Count;
-        //}
-
-        //public int GetYMax()
-        //{
-        //    List<Point> vertices = GetVerticesModificados();
-        //    int maior = vertices[0].Y;
-
-        //    for(int i=1; i<vertices.Count; i++)
-        //        if(vertices[i].Y > maior)
-        //            maior = vertices[i].Y;
-
-        //    return maior;
-        //}
-
-        //public int GetYMin()
-        //{
-        //    List<Point> vertices = GetVerticesModificados();
-        //    int menor = vertices[0].Y;
-
-        //    for(int i=1; i<vertices.Count; i++)
-        //        if(vertices[i].Y < menor)
-        //            menor = vertices[i].Y;
-
-        //    return menor;
-        //}
-
-        //public int GetPosAresta(Point p)
-        //{
-        //    int i=0;
-        //    List<Reta> arestasTransformadas = GetArestasTransformadas();
-        //    while(i<arestasTransformadas.Count && (p.X != arestasTransformadas[i].GetIniX() || p.Y != arestasTransformadas[i].GetIniY()))
-        //        i++;
-
-        //    if(i<arestasTransformadas.Count && p.X == arestasTransformadas[i].GetIniX() && p.Y == arestasTransformadas[i].GetIniY())
-        //        return i;
-        //    return -1;
-        //}
-
         public List<Reta> GetArestas(List<PointReal> verticesAtuais)
         {
             List<Reta> arestas = new List<Reta>();
@@ -335,28 +279,6 @@ namespace ProcessamentoImagens.classes
 
             return vertices;
         }
-
-        //// Retorno dos vértices do meu polígono
-        //public List<Point> GetVerticesOriginais()
-        //{
-        //    List<Point> vertices = new List<Point>();
-
-        //    for (int i = 0; i < Arestas.Count; i++)
-        //        vertices.Add(new Point(Arestas[i].GetIniX(), Arestas[i].GetIniY()));
-
-        //    return vertices;
-        //}
-
-        //public List<Point> GetVerticesModificados()
-        //{
-        //    List<Point> vertices = GetVerticesOriginais();
-        //    List<Point> novosVertices = new List<Point>();
-
-        //    for (int i = 0; i < vertices.Count; i++)
-        //        novosVertices.Add(MultiplicaVerticeMatriz(vertices[i]));
-
-        //    return novosVertices;
-        //}
 
         public List<PointReal> GetVertices(List<PointReal> VerticesObj3D)
         {

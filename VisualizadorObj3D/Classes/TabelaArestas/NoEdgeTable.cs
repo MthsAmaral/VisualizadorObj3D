@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VisualizadorObj3D.Classes;
 
-namespace ProcessamentoImagens.classes
+namespace VisualizadorObj3D.classes
 {
     internal class NoEdgeTable
     {
@@ -25,7 +26,7 @@ namespace ProcessamentoImagens.classes
         public double nxInc { get; set; }
         public double nyInc { get; set; }
         public double nzInc { get; set; }
-        public NoEdgeTable prox { get; set; } //abreviação para próximo
+        public NoEdgeTable prox { get; set; }
 
         public NoEdgeTable()
         {
@@ -107,11 +108,18 @@ namespace ProcessamentoImagens.classes
             double dr = r.GetFimR() - r.GetIniR();
             double dg = r.GetFimG() - r.GetIniG();
             double db = r.GetFimB() - r.GetIniB();
+            double dnx = r.GetFimNX() - r.GetIniNX();
+            double dny = r.GetFimNY() - r.GetIniNY();
+            double dnz = r.GetFimNZ() - r.GetIniNZ();
+
             xInc = dx / dy; // assume que dy != 0
             zInc = dz / dy;
             rInc = dr / dy;
             gInc = dg / dy;
             bInc = db / dy;
+            nxInc = dnx / dy;
+            nyInc = dny / dy;
+            nzInc = dnz / dy;
         }
 
         public void Incrementar()
@@ -121,9 +129,9 @@ namespace ProcessamentoImagens.classes
             rMin += rInc;
             gMin += gInc;
             bMin += bInc;
-            nxInc += nxInc;
-            nyInc += nyInc;
-            nzInc += nzInc;
+            nxMin += nxInc;
+            nyMin += nyInc;
+            nzMin += nzInc;
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 
-namespace ProcessamentoImagens.classes
+namespace VisualizadorObj3D.classes
 {
     public class PointReal
     {
@@ -15,10 +15,13 @@ namespace ProcessamentoImagens.classes
         public PointReal VetorE { get; set; }
         public PointReal VetorL { get; set; }
         public PointReal VetorH { get; set; }
+        // vou realizar essa operação uma única vez no momento que instanciar o objeto 3D
+        public List<Face> FacesAdjacentes { get; set; }
 
         public PointReal()
         {
             X = Y = Z = -1;
+            FacesAdjacentes = new List<Face>();
         }
 
         public PointReal(double x, double y, double z)
@@ -26,6 +29,7 @@ namespace ProcessamentoImagens.classes
             X = x;
             Y = y;
             Z = z;
+            FacesAdjacentes = new List<Face>();
         }
 
         // ==============================================================================
@@ -40,6 +44,7 @@ namespace ProcessamentoImagens.classes
         {
             return Math.Sqrt(Math.Pow(v1.X, 2) + Math.Pow(v1.Y, 2) + Math.Pow(v1.Z, 2));
         }
+        
         private PointReal CalcularProdutoVetorial(PointReal v1, PointReal v2)
         {
             double i1, i2, j1, j2, k1, k2;
@@ -52,27 +57,33 @@ namespace ProcessamentoImagens.classes
 
             return new PointReal(i1 - i2, j1 - j2, k1 -k2);
         }
+
         private double CalcularProdutoEscalar(PointReal v1, PointReal v2)
         {
             return (v1.X * v2.X) + (v1.Y * v2.Y) + (v1.Z * v2.Z);
         }
+
         private PointReal CalcularSubtracaoVetor(PointReal v1, PointReal v2)
         {
             return new PointReal(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z);
         }
+
         private PointReal CalcularAdicaoVetor(PointReal v1, PointReal v2)
         {
             return new PointReal(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
         }
+
         public void CalcularVetorE()
         {
             //VetorE = CalcularDivisaoModulo(PontoObs, CalcularVetorModulo(PontoObs));
             VetorE = new PointReal(0, 0, -1);
         }
+
         public void CalcularVetorL(PointReal PontoLuz)
         {
             VetorL = CalcularDivisaoModulo(PontoLuz, CalcularVetorModulo(PontoLuz));
         }
+
         public void CalcularVetorH()
         {
             PointReal vELAdicao = CalcularAdicaoVetor(VetorL, VetorE);
@@ -80,6 +91,7 @@ namespace ProcessamentoImagens.classes
 
             VetorH = CalcularDivisaoModulo(vELAdicao, modulovEL);
         }
+
         public Color CalcularCorIluminacao(Color corLuz, Color corObjeto, double ka, double kd, double ks, int nEspecular, string componente)
         {
             // Superficie
@@ -143,6 +155,7 @@ namespace ProcessamentoImagens.classes
 
             return Color.FromArgb(finalR, finalG, finalB);
         }
+
         private int LimitarCor(double valor)
         {
             if (valor > 255)
@@ -151,6 +164,7 @@ namespace ProcessamentoImagens.classes
                 return 0;
             return (int) valor;
         }
+
         public void CalcularVetorNormalVertice(List<Face> facesAdjacentes)
         {
             double somaX = 0;
@@ -181,6 +195,5 @@ namespace ProcessamentoImagens.classes
                 VetorN = new PointReal(0, 0, 1); // Trava de segurança contra o NaN
             }
         }
-        
     }
 }
